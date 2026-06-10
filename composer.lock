@@ -1,0 +1,71 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "5f73d5f8b88467a7ec43f77c1d223723",
+    "packages": [
+        {
+            "name": "collei/collection",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/collei/collection.git",
+                "reference": "c581aa44371cc19aea630a5095a8a42520eb2d7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/collei/collection/zipball/c581aa44371cc19aea630a5095a8a42520eb2d7a",
+                "reference": "c581aa44371cc19aea630a5095a8a42520eb2d7a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.0 || ^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Collei\\": "src"
+                },
+                "files": [
+                    "src/helpers.php",
+                    "src/polyfills.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Al Ju",
+                    "email": "alarido.su@gmail.com"
+                }
+            ],
+            "description": "a Laravel-inspired Collection class, based upon internal PHP functions and itselves.",
+            "keywords": [
+                "collection"
+            ],
+            "support": {
+                "source": "https://github.com/collei/collection/tree/main",
+                "issues": "https://github.com/collei/collection/issues"
+            },
+            "time": "2026-05-30T18:13:08+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "collei/collection": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^8.0"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}

@@ -1,0 +1,29 @@
+{
+    "name": "collei/rovi",
+    "description": "A simple PHP-annotation-based ORM.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Al Ju",
+            "email": "alarido.su@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/collei/collection.git"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "collei/collection": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rovi\\": "src/Rovi/",
+            "Models\\": "Models/"
+        }
+    }
+}

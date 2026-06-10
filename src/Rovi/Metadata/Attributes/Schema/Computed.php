@@ -1,0 +1,10 @@
+<?php
+namespace Rovi\Metadata\Attributes\Schema;
+
+use Attribute;
+
+#[Attribute(Attribute::TARGET_PROPERTY)]
+class Computed implements DatabaseGenerated
+{
+    //
+}

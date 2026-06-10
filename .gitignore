@@ -1,0 +1,5 @@
+/vendor/
+/Models/
+*.txt
+index.php
+appsettings.json
