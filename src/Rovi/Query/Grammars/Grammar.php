@@ -251,10 +251,10 @@ abstract class Grammar
     public function compileSet(string $field, string $value, bool $nesting = false)
     {
         if ($nesting) {
-            return sprintf('%s = (%s)');
+            return sprintf('%s = (%s)', $field, $value);
         }
 
-        return sprintf('%s = %s');
+        return sprintf('%s = %s', $field, $value);
     }
 
     /**
@@ -319,13 +319,23 @@ abstract class Grammar
         return sprintf('ORDER BY %s', implode(', ', $items));        
     }
 
-    public function compileSetClause(array $items)
+    public function compileUpdateTable(string $table)
+    {
+        return sprintf('UPDATE %s', $table);
+    }
+
+    public function compileUpdateSetClause(array $items)
     {
         if (empty($items)) {
             return null;
         }
 
         return sprintf('SET %s', implode(', ', $items));
+    }
+
+    public function compileDeleteTable(string $table)
+    {
+        return sprintf('DELETE FROM %s', $table);
     }
 
     protected function conformJoinType(string $joinType)
@@ -438,6 +448,41 @@ abstract class Grammar
 
         if (! empty($limit)) {
             $sql[] = sprintf('LIMIT %s', $limit);
+        }
+
+        return implode(' ', $sql);
+    }
+
+    public function compileStatementUpdate(
+        string $table,
+        array $setItems,
+        ?array $wheres = null
+    ) {
+        $sql = [];
+
+        $sql[] = $this->compileUpdateTable($table);
+
+        if (! empty($setItems)) {
+            $sql[] = $this->compileUpdateSetClause($setItems);
+        }
+
+        if (! empty($wheres)) {
+            $sql[] = $this->compileWhereClause($wheres);
+        }
+
+        return implode(' ', $sql);
+    }
+
+    public function compileStatementDelete(
+        string $table,
+        ?array $wheres = null
+    ) {
+        $sql = [];
+
+        $sql[] = $this->compileDeleteTable($table);
+
+        if (! empty($wheres)) {
+            $sql[] = $this->compileWhereClause($wheres);
         }
 
         return implode(' ', $sql);

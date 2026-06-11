@@ -479,6 +479,29 @@ class Builder
 
     public function asSql()
     {
+        return $this->compileSelectSql();
+    }
+
+    public function asUpdateSql(array $values)
+    {
+        if (false === ($sql = $this->compileUpdateSql($values, $error))) {
+            return '--'.$error;
+        }
+
+        return $sql;
+    }
+
+    public function asDeleteSql()
+    {
+        if (false === ($sql = $this->compileDeleteSql($error))) {
+            return '--'.$error;
+        }
+
+        return $sql;
+    }
+
+    protected function compileSelectSql()
+    {
         $compiler = $this->getConnection()->getGrammar();
 
         $select = $compiler->compileSelectClause($this->select);
@@ -516,6 +539,76 @@ class Builder
             $this->where, $this->groups, $this->having, $this->orders,
             $this->offset, $this->limit 
         );
+
+        return $sql;
+    }
+
+    protected function compileUpdateSql(array $values, ?string &$error = '')
+    {
+        $error = [];
+
+        $compiler = $this->getConnection()->getGrammar();
+
+        $from = 'NOTHING';
+
+        if (empty($this->from)) {
+            $error = 'Update requires a table to operate upon - use from() method.';
+
+            return false;
+        } else {
+            list($from, $as) = array(current($this->from), key($this->from));
+
+            if (! is_string($from)) {
+                $error = 'Update does not support CTE (subquery), only actual tables.';
+
+                return false;
+            }
+        }
+
+        $setList = [];
+
+        foreach ($values as $field => $value) {
+            if ($value instanceof Closure) {
+                $value($sub = $this->createSub());
+
+                $value = $sub;
+            }
+
+            if ($nesting = $value instanceof self) {
+                $value = $value->asSql();
+            }
+
+            $setList[] = $compiler->compileSet($field, $value, $nesting);
+        }
+
+        $sql = $compiler->compileStatementUpdate($from, $setList, $this->where);
+
+        return $sql;
+    }
+
+    protected function compileDeleteSql(?string &$error = '')
+    {
+        $error = [];
+
+        $compiler = $this->getConnection()->getGrammar();
+
+        $from = 'NOTHING';
+
+        if (empty($this->from)) {
+            $error = 'DELETE requires a table to operate upon - use from() method.';
+
+            return false;
+        } else {
+            list($from, $as) = array(current($this->from), key($this->from));
+
+            if (! is_string($from)) {
+                $error = 'DELETE does not support CTE (subquery), only actual tables.';
+
+                return false;
+            }
+        }
+
+        $sql = $compiler->compileStatementDelete($from, $this->where);
 
         return $sql;
     }
