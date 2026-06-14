@@ -6,6 +6,10 @@ use Rovi\Query\Expressions\Expression;
 
 abstract class Grammar
 {
+    protected const MAX_INT_32 = 2147483647;
+
+    protected const MAX_INT_64 = 9223372036854775807;
+
     protected const REGEX_SQL_IDENTIFIER = '/^\s*(?<identifier>(?>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\])(?>\s*\.\s*(?>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\])){0,2})(?>\s+as\s+(?<alias>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\]))?\s*$/i';
 
     protected const REGEX_JOIN_TYPE = '/\s*(full|left|right|)\s*(inner|outer|)?\s*(join)\s*/i';
