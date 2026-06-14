@@ -323,6 +323,49 @@ abstract class Grammar
         return sprintf('ORDER BY %s', implode(', ', $items));        
     }
 
+    public function compileInsertTable(string $table, array $fields)
+    {
+        return sprintf('INSERT INTO %s (%s)', $table, implode(', ', $fields));
+    }
+
+    public function compileInsertValuesClause(array $values)
+    {
+        if (is_array(current($values))) {
+            $rows = [];
+
+            foreach ($values as $row) if (is_array($row)) {
+                $row = array_map([$this, 'quoteIfString'], $row);
+
+                $rows[] = sprintf('(%s)', implode(', ', $row));
+            }
+
+            return sprintf('VALUES %s', implode(",\n", $rows));
+        }
+
+        return sprintf('VALUES (%s)', implode(', ', $values));
+    }
+
+    protected function quoteIfString($value)
+    {
+        if (is_string($value) || (is_object($value) && method_exists($value, '__toString()'))) {
+            return "'{$value}'";
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return "'" . $value->format('Y-m-d H:i:s') . "'";
+        }
+
+        if (is_float($value)) {
+            return number_format($value, 8, '.', '');
+        }
+
+        if (is_int($value)) {
+            return ($value > self::MAX_INT_32) ? "'{$value}'" : number_format($value, 0, '', '');
+        }
+
+        return $value;
+    }
+
     public function compileUpdateTable(string $table)
     {
         return sprintf('UPDATE %s', $table);
@@ -453,6 +496,34 @@ abstract class Grammar
         if (! empty($limit)) {
             $sql[] = sprintf('LIMIT %s', $limit);
         }
+
+        return implode(' ', $sql);
+    }
+
+    public function compileStatementInsertValues(
+        string $table,
+        array $fields,
+        array $values
+    ) {
+        $sql = [];
+
+        $sql[] = $this->compileInsertTable($table, $fields);
+
+        $sql[] = $this->compileInsertValuesClause($values);
+
+        return implode(' ', $sql);
+    }
+
+    public function compileStatementInsertSelect(
+        string $table,
+        array $fields,
+        string $selectSql
+    ) {
+        $sql = [];
+
+        $sql[] = $this->compileInsertTable($table, $fields);
+
+        $sql[] = $selectSql;
 
         return implode(' ', $sql);
     }
