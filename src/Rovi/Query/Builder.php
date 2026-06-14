@@ -565,6 +565,51 @@ class Builder
         return $sql;
     }
 
+    protected function compileInsertSql($values, array $fields = [], ?string &$error = '')
+    {
+        $error = '';
+
+        $compiler = $this->getConnection()->getGrammar();
+
+        $from = 'NOTHING';
+
+        if (empty($this->from)) {
+            $error = 'INSERT INTO requires a table to operate upon - use from() method.';
+
+            return false;
+        } else {
+            list($from, $as) = array(current($this->from), key($this->from));
+
+            if (! is_string($from)) {
+                $error = 'INSERT INTO does not support CTE (subquery) as target, only actual tables.';
+
+                return false;
+            }
+        }
+
+        if (is_array($values) && is_array(current($values))) {
+            foreach ($values as $k => $row) {
+                ksort($values[$k]);
+            }
+
+            $first = current($values);
+
+            return $compiler->compileStatementInsertValues($from, array_keys($first), $values);
+        }
+
+        if ($values instanceof Closure) {
+            $values($sub = $this->createSub());
+
+            $values = $sub;
+        }
+
+        if ($values instanceof self) {
+            return $compiler->compileStatementInsertSelect($from, $fields, $values->asSql());
+        }
+
+        return null;
+    }
+
     protected function compileUpdateSql(array $values, ?string &$error = '')
     {
         $error = [];
