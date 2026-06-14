@@ -482,6 +482,28 @@ class Builder
         return $this->compileSelectSql();
     }
 
+    public function asInsertSql(array $values)
+    {
+        if (false === ($sql = $this->compileInsertSql($values, [], $error))) {
+            return '--'.$error;
+        }
+
+        return $sql;
+    }
+
+    public function asInsertSelectSql(array $fields, $values)
+    {
+        if (! $values instanceof Closure && ! $values instanceof self) {
+            return '--The asInsertSelectSql() method supports only Closure and Builder instances.';
+        }
+
+        if (false === ($sql = $this->compileInsertSql($values, $fields, $error))) {
+            return '--'.$error;
+        }
+
+        return $sql;
+    }
+
     public function asUpdateSql(array $values)
     {
         if (false === ($sql = $this->compileUpdateSql($values, $error))) {
