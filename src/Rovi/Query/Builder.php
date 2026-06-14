@@ -612,7 +612,7 @@ class Builder
 
     protected function compileUpdateSql(array $values, ?string &$error = '')
     {
-        $error = [];
+        $error = '';
 
         $compiler = $this->getConnection()->getGrammar();
 
@@ -655,7 +655,7 @@ class Builder
 
     protected function compileDeleteSql(?string &$error = '')
     {
-        $error = [];
+        $error = '';
 
         $compiler = $this->getConnection()->getGrammar();
 
