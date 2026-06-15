@@ -588,13 +588,25 @@ class Builder
         }
 
         if (is_array($values) && is_array(current($values))) {
+            $fields = null;
+
             foreach ($values as $k => $row) {
                 ksort($values[$k]);
+
+                if (is_null($fields)) {
+                    $fields = array_keys($values[$k]);
+                }
+
+                foreach ($row as $m => $cell) {
+                    $binder = ':i' . ($bindingCount++);
+
+                    $bindings[$binder] = $cell;
+
+                    $values[$k][$m] = $binder;
+                }               
             }
 
-            $first = current($values);
-
-            return $compiler->compileStatementInsertValues($from, array_keys($first), $values);
+            return $compiler->compileStatementInsertValues($from, $fields, $values);
         }
 
         if ($values instanceof Closure) {
