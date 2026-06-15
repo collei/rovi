@@ -14,6 +14,8 @@ abstract class Grammar
 
     protected const REGEX_JOIN_TYPE = '/\s*(full|left|right|)\s*(inner|outer|)?\s*(join)\s*/i';
 
+    protected const REGEX_SQL_BINDING_VARIABLE = '/\s*:[A-Za-z]\w*\s*/i';
+
     protected const TYPES = [
         'int' => ['integer','int','tinyint','smallint','mediumint','bigint'],
         'float' => ['float','double','decimal','numeric'],
@@ -347,7 +349,11 @@ abstract class Grammar
 
     protected function quoteIfString($value)
     {
-        if (is_string($value) || (is_object($value) && method_exists($value, '__toString()'))) {
+        if (is_string($value) && (1 !== preg_match(self::REGEX_SQL_BINDING_VARIABLE, $value))) {
+            return "'{$value}'";
+        }
+
+        if (is_object($value) && method_exists($value, '__toString()')) {
             return "'{$value}'";
         }
 
