@@ -482,9 +482,9 @@ class Builder
         return $this->compileSelectSql();
     }
 
-    public function asInsertSql(array $values)
+    public function asInsertSql(array $values, ?array &$bindings = [])
     {
-        if (false === ($sql = $this->compileInsertSql($values, [], $error))) {
+        if (false === ($sql = $this->compileInsertSql($values, [], $bindings, $error))) {
             return '--'.$error;
         }
 
@@ -497,7 +497,7 @@ class Builder
             return '--The asInsertSelectSql() method supports only Closure and Builder instances.';
         }
 
-        if (false === ($sql = $this->compileInsertSql($values, $fields, $error))) {
+        if (false === ($sql = $this->compileInsertSql($values, $fields, $bindings, $error))) {
             return '--'.$error;
         }
 
@@ -565,9 +565,9 @@ class Builder
         return $sql;
     }
 
-    protected function compileInsertSql($values, array $fields = [], ?string &$error = '')
+    protected function compileInsertSql($values, array $fields = [], ?array &$bindings = [], ?string &$error = '')
     {
-        $error = '';
+        list($error, $bindingCount) = array('', 1);
 
         $compiler = $this->getConnection()->getGrammar();
 
