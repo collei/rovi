@@ -2,5 +2,6 @@
 /Models/
 *.txt
 *.zip
+*.db
 index.php
 appsettings.json
