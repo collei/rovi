@@ -143,11 +143,16 @@ class Builder
         return $this;
     }
 
-    public function from(string $table, ?string $as = null)
+    public function table(string $table, ?string $as = null)
     {
         $this->from = empty($as) ? [$table] : [$as => $table];
 
         return $this;
+    }
+
+    public function from(string $table, ?string $as = null)
+    {
+        return $this->table(...func_get_args());
     }
 
     public function fromSub($table, string $as)
@@ -482,44 +487,90 @@ class Builder
         return $this->compileSelectSql();
     }
 
-    public function asInsertSql(array $values, ?array &$bindings = [])
+    public function insert(array $values)
     {
-        if (false === ($sql = $this->compileInsertSql($values, [], $bindings, $error))) {
-            return '--'.$error;
+        if ($this->makeInsertSql($values, $sql, $bindings)) {
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','values'),true).'</pre></fieldset>';
         }
-
-        return $sql;
     }
 
-    public function asInsertSelectSql(array $fields, $values)
+    public function insertSelect(array $fields, $values)
+    {
+        if ($this->makeInsertSelectSql($fields, $sql, $values)) {
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','fields','values'),true).'</pre></fieldset>';
+        }
+    }
+
+    public function update(array $values)
+    {
+        if ($this->makeUpdateSql($values, $sql)) {
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','values'),true).'</pre></fieldset>';
+        }
+    }
+
+    public function delete()
+    {
+        if ($this->makeDeleteSql($sql)) {
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql'),true).'</pre></fieldset>';
+        }
+    }
+
+    protected function makeInsertSql(array $values, ?string &$sql = null, ?array &$bindings = [])
+    {
+        if (false === ($sqlCode = $this->compileInsertSql($values, [], $bindings, $error))) {
+            $sql = '--'.$error;
+
+            return false;
+        }
+
+        $sql = $sqlCode;
+
+        return true;
+    }
+
+    protected function makeInsertSelectSql(array $fields, ?string &$sql = null, $values)
     {
         if (! $values instanceof Closure && ! $values instanceof self) {
-            return '--The asInsertSelectSql() method supports only Closure and Builder instances.';
+            $sql = '--The asInsertSelectSql() method supports only Closure and Builder instances.';
+
+            return false;
         }
 
-        if (false === ($sql = $this->compileInsertSql($values, $fields, $bindings, $error))) {
-            return '--'.$error;
+        if (false === ($sqlCode = $this->compileInsertSql($values, $fields, $bindings, $error))) {
+            $sql = '--'.$error;
+
+            return false;
         }
 
-        return $sql;
+        $sql = $sqlCode;
+
+        return true;
     }
 
-    public function asUpdateSql(array $values)
+    protected function makeUpdateSql(array $values, ?string &$sql = null)
     {
-        if (false === ($sql = $this->compileUpdateSql($values, $error))) {
-            return '--'.$error;
+        if (false === ($sqlCode = $this->compileUpdateSql($values, $error))) {
+            $sql = '--'.$error;
+
+            return false;
         }
 
-        return $sql;
+        $sql = $sqlCode;
+
+        return true;
     }
 
-    public function asDeleteSql()
+    protected function makeDeleteSql(?string &$sql = null)
     {
-        if (false === ($sql = $this->compileDeleteSql($error))) {
-            return '--'.$error;
+        if (false === ($sqlCode = $this->compileDeleteSql($error))) {
+            $sql = '--'.$error;
+
+            return false;
         }
 
-        return $sql;
+        $sql = $sqlCode;
+
+        return true;
     }
 
     protected function compileSelectSql()
