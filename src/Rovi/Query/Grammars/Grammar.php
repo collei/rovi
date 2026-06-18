@@ -109,6 +109,19 @@ abstract class Grammar
         ];
     }
 
+    public function isValidOperator($operator)
+    {
+        if (in_array($operator, self::SQL_OPERATORS, true)) {
+            return true;
+        }
+
+        if (! is_string($operator)) {
+            return false;
+        }
+
+        return array_key_exists(strtolower($operator), self::SQL_OPERATORS);
+    }
+
     public function setDefaultStringSize(int $size)
     {
         $this->defaultStringSize = $size;

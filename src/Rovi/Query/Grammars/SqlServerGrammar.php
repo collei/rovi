@@ -3,7 +3,7 @@ namespace Rovi\Query\Grammars;
 
 use DateTime;
 
-class SqliteGrammar extends Grammar
+class SqlServerGrammar extends Grammar
 {
     protected const TYPES = [
         'int' => ['integer','int','tinyint','smallint','mediumint','bigint'],
@@ -117,7 +117,7 @@ class SqliteGrammar extends Grammar
 
     protected function compileAutoIncrement(int $seed = 1, int $increment = 1)
     {
-        return 'AUTO_INCREMENT';
+        return sprintf('IDENTITY(%s,%s)', $seed, $increment);
     }
 
     protected function compilePrimaryKey()
