@@ -629,14 +629,15 @@ abstract class Connection
     public function __debugInfo()
     {
         return [
-            'name' => $this->name,
-            'type' => $this->type,
             'isOpen' => $this->isOpen,
+            'dsn' => $this->dsn,
+            'type' => $this->type,
+            'name' => $this->name,
             'database' => $this->database,
             'username' => $this->username,
-            'grammar' => get_class($this->grammar) . '@' . spl_object_id($this->grammar),
-            'handle' => get_class($this->handle) . '@' . spl_object_id($this->handle),
-            'logger' => get_class($this->logger) . '@' . spl_object_id($this->logger),
+            'grammar' => $this->grammar ? (get_class($this->grammar) . '@' . spl_object_id($this->grammar)) : 'NULL',
+            'handle' => $this->handle ? (get_class($this->handle) . '@' . spl_object_id($this->handle)) : 'NULL',
+            'logger' => $this->logger ? (get_class($this->logger) . '@' . spl_object_id($this->logger)) : 'NULL',
             'options' => $this->options,
         ];
     }    
