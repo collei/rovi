@@ -91,7 +91,7 @@ final class Connector
 
         $class = self::DB_VENDORS[$vendor];
 
-        $connection = new $class($vendor, $dsn, $database, $username, $password);
+        $connection = new $class($dsn, $database, $username, $password);
 
         $name = 'DBC' . (new DateTime())->format('YmdHisu');
 
