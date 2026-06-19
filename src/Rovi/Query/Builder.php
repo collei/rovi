@@ -497,21 +497,29 @@ class Builder
     public function insertSelect(array $fields, $values)
     {
         if ($this->makeInsertSelectSql($fields, $sql, $values)) {
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','fields','values'),true).'</pre></fieldset>';
+            $bindings = $this->bindingKeeper->getBindingsFor($sql);
+
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','fields','values'),true).'</pre></fieldset>';
         }
     }
 
     public function update(array $values)
     {
-        if ($this->makeUpdateSql($values, $sql)) {
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','values'),true).'</pre></fieldset>';
+        if ($this->makeUpdateSql($values, $bindings, $sql)) {
+            $sqlBindings = $this->bindingKeeper->getBindingsFor($sql);
+
+            $bindings += $sqlBindings;
+
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','values'),true).'</pre></fieldset>';
         }
     }
 
     public function delete()
     {
         if ($this->makeDeleteSql($sql)) {
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql'),true).'</pre></fieldset>';
+            $bindings = $this->bindingKeeper->getBindingsFor($sql);
+
+            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings'),true).'</pre></fieldset>';
         }
     }
 
@@ -547,9 +555,9 @@ class Builder
         return true;
     }
 
-    protected function makeUpdateSql(array $values, ?string &$sql = null)
+    protected function makeUpdateSql(array $values, ?array &$bindings = [], ?string &$sql = null)
     {
-        if (false === ($sqlCode = $this->compileUpdateSql($values, $error))) {
+        if (false === ($sqlCode = $this->compileUpdateSql($values, $bindings, $error))) {
             $sql = '--'.$error;
 
             return false;
@@ -673,9 +681,9 @@ class Builder
         return null;
     }
 
-    protected function compileUpdateSql(array $values, ?string &$error = '')
+    protected function compileUpdateSql(array $values, ?array &$bindings = [], ?string &$error = '')
     {
-        $error = '';
+        list($error, $bindingCount) = array('', 1);
 
         $compiler = $this->getConnection()->getGrammar();
 
@@ -706,6 +714,12 @@ class Builder
 
             if ($nesting = $value instanceof self) {
                 $value = $value->asSql();
+            } else {
+                $binder = ':u' . ($bindingCount++);
+
+                $bindings[$binder] = $value;
+
+                $value = $binder;
             }
 
             $setList[] = $compiler->compileSet($field, $value, $nesting);
