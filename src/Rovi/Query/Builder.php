@@ -33,24 +33,12 @@ class Builder
 
     public function __debugInfo()
     {
-        $debugFrom = function($value) {
-            if (is_array($value)) foreach ($value as $key => $item) {
-                if (is_object($item)) {
-                    $item = get_class($item) . '@' . spl_object_id($item);
-                }
-
-                return sprintf('[[%s] => %s]', $key, $item);
-            }
-
-            return print_r($value, true);
-        };
-
         return [
             'builderID' => $this->builderID,
             'connection' => get_class($this->connection) . '@' . spl_object_id($this->connection),
             'bindingKeeper' => $this->bindingKeeper,
             'select' => empty($this->select) ? '*' : ($this->select ?: 'Array()'),
-            'from' => empty($this->from) ? 'NULL' : $debugFrom($this->from),
+            'from' => empty($this->from) ? 'NULL' : $this->from,
             'joins' => $this->joins ?: 'Array()',
             'where' => $this->where ?: 'Array()',
             'groups' => $this->groups ?: 'Array()',
