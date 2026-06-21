@@ -4,7 +4,7 @@ namespace Rovi\Repository\Traits;
 /**
  * Add abilities to transform field names.
  */
-trait WithPrettyFieldNames
+trait WithPrettyFields
 {
     /**
      * Converts from camelCase to snake_case.
