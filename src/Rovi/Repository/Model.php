@@ -1,10 +1,10 @@
 <?php
 namespace Rovi\Repository;
 
-use Rovi\Metadata\Prospector;
+use Rovi\Connections\Connector;
 
 /**
- * Model base class.
+ * Model base class. 
  */
 abstract class Model
 {
