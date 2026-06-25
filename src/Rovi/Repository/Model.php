@@ -159,11 +159,67 @@ abstract class Model
     }
 
     /**
+     * Allows chaining property set one by one.
+     * 
+     * @param string $name
+     * @param array $arguments
+     * @return $this 
+     */
+    public final function __call(string $name, array $arguments)
+    {
+        $this->$name = current($arguments);
+
+        return $this;
+    }
+
+    /**
+     * Creates a new instance, optionally with fields.
+     * 
+     * @param array $fields = []
+     * @return static
+     */
+    public static final function new(array $fields = [])
+    {
+        return new static($fields);
+    }
+
+    /**
+     * Creates new instance, optionally with fields or results.
+     * 
+     * @param mixed $fields = []
+     * @return static
+     */
+    public static final function fromResult($fields = [])
+    {
+        return new static(
+            is_array($fields) ? $fields : (array) $fields
+        );
+    }
+
+    /**
+     * Retrieves the model's connection.
+     * 
+     * @return Rovi\Connections\Connection
+     */
+    public final function connection()
+    {
+        if ($this->connection) {
+            return $this->connection;
+        }
+
+        if (Connector::hasConnection()) {
+            return $this->connection = Connector::getConnection(static::CONNECTION);
+        }
+
+        throw new RoviModelException($this, sprintf('Connection not found: \'%s\'', static::CONNECTION));
+    }
+
+    /**
      * Retrieves instance as JSON string.
      * 
      * @return string
      */
-    public final function __toJson()
+    public final function toJson()
     {
         return json_encode($this->toArray());
     }
@@ -199,17 +255,6 @@ abstract class Model
     }
 
     /**
-     * Creates a new instance, optionally with fields.
-     * 
-     * @param array $fields = []
-     * @return static
-     */
-    public static function new(array $fields = [])
-    {
-        return new static($fields);
-    }
-
-    /**
      * Hydrates the model instance with data from database.
      * 
      * @param array $fields
@@ -236,5 +281,28 @@ abstract class Model
     public function toArray()
     {
         return array_merge($this->retrieved, $this->modified);
+    }
+
+    /**
+     * Retrieves the given record as instance, if any.
+     * 
+     * @return static
+     */
+    public function find($id)
+    {
+        $result = $this->connection()->getBuilder()
+                    ->table(static::TABLE)
+                    ->where(static::KEY, '=', $id)
+                    ->get()->first();
+
+        if (is_object($result)) {
+            return static::fromResult($result);
+        }
+
+        if (is_array($result)) {
+            return static::new($result);
+        }
+
+        return null;
     }
 }
