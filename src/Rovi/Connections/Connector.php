@@ -65,6 +65,28 @@ final class Connector
      */
     protected static $connectionPool = [];
 
+    /**
+     * Retrieves the connection, if any.
+     * 
+     * @param string $name
+     * @return bool
+     */
+    public static function hasConnection(string $name)
+    {
+        return array_key_exists($name, self::$connectionPool);
+    }
+
+    /**
+     * Retrieves the connection, if any.
+     * 
+     * @param string $name
+     * @return Rovi\Connections\Connection|null
+     */
+    public static function getConnection(string $name)
+    {
+        return self::$connectionPool[$name] ?? null;
+    }
+
 	/**
 	 * Initializes a new instance
 	 *
@@ -73,13 +95,15 @@ final class Connector
 	 * @param string $database
 	 * @param string $username
 	 * @param string $password
+     * @return Rovi\Connections\Connection 
 	 */
 	public static function build(
-        ?string $type,
+        string $type,
         ?string $server = null,
         ?string $database = null,
         ?string $username = null,
-        ?string $password = null
+        ?string $password = null,
+        ?string &$name = null
     ) {
 		$vendor = self::getSupportedType($type);
 
@@ -93,7 +117,9 @@ final class Connector
 
         $connection = new $class($dsn, $database, $username, $password);
 
-        $name = 'DBC' . (new DateTime())->format('YmdHisu');
+        if (empty($name)) {
+            $name = 'DBC' . (new DateTime())->format('YmdHisu');
+        }
 
         return self::$connectionPool[$name] = $connection;
 	}
@@ -104,22 +130,22 @@ final class Connector
      * 
      * @static
      * @param string $vendor
-     * @param string $server = ''
-     * @param string $database = ''
-     * @param string $username = ''
-     * @param string $password = ''
-     * @param int $port = 0
+     * @param string|null $server = null
+     * @param string|null $database = null
+     * @param string|null $username = null
+     * @param string|null $password = null
+     * @param int|null $port = null
      * @param string|null $charset = null
      * @return string
      */
     public static function buildDsn(
         string $vendor,
-        string $server = null,
-        string $database = null,
-        string $username = null,
-        string $password = null,
-        int $port = null,
-        string $charset = null
+        ?string $server = null,
+        ?string $database = null,
+        ?string $username = null,
+        ?string $password = null,
+        ?int $port = null,
+        ?string $charset = null
     ) {
         if ($type = self::getSupportedType($vendor)) {
             $port = ($port > 0) ? $port : self::DB_STANDARD_PORTS[$type];
