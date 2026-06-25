@@ -122,47 +122,6 @@ abstract class Connection
     }
 
     /**
-     * Builds a DSN string from parameters ,according to the supported vendors.
-     * Returns empty string if vendor is not supported.
-     * 
-     * @static
-     * @param string $vendor
-     * @param string $server = ''
-     * @param string $database = ''
-     * @param string $username = ''
-     * @param string $password = ''
-     * @param int $port = 0
-     * @param string|null $charset = null
-     * @return string
-     */
-    public static function buildDsn(
-        string $vendor,
-        string $server = null,
-        string $database = null,
-        string $username = null,
-        string $password = null,
-        int $port = null,
-        string $charset = null
-    ) {
-        if ($type = static::getSupportedType($vendor)) {
-            $port = ($port > 0) ? $port : static::DB_STANDARD_PORTS[$type];
-            $charset = is_null($charset) ? 'utf8' : $charset;
-
-            $parameters = compact('server','database','port','charset','username','password');
-
-            $dsn = static::DB_DSNS[$type];
-
-            foreach ($parameters as $name => $value) {
-                $dsn = str_replace('{'.$name.'}', $value, $dsn);
-            }
-
-            return $dsn;
-        }
-
-        return '';
-    }
-
-    /**
      * Retrieves the database type;
      * 
      * @return string|null
