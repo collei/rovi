@@ -488,7 +488,7 @@ class Builder
         return $this->compileSelectSql();
     }
 
-    public function insert(array $values)
+    public function insert(array $values, ?array $output = null)
     {
         if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
             if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
@@ -537,9 +537,9 @@ class Builder
         }
     }
 
-    protected function makeInsertSql(array $values, ?string &$sql = null, ?array &$bindings = [])
+    protected function makeInsertSql(array $values, ?array $output = null, ?string &$sql = null, ?array &$bindings = [])
     {
-        if (false === ($sqlCode = $this->compileInsertSql($values, [], $bindings, $error))) {
+        if (false === ($sqlCode = $this->compileInsertSql($values, [], $output, $bindings, $error))) {
             $sql = '--'.$error;
 
             return false;
@@ -558,7 +558,7 @@ class Builder
             return false;
         }
 
-        if (false === ($sqlCode = $this->compileInsertSql($values, $fields, $bindings, $error))) {
+        if (false === ($sqlCode = $this->compileInsertSql($values, $fields, null, $bindings, $error))) {
             $sql = '--'.$error;
 
             return false;
@@ -638,7 +638,7 @@ class Builder
         return $sql;
     }
 
-    protected function compileInsertSql($values, array $fields = [], ?array &$bindings = [], ?string &$error = '')
+    protected function compileInsertSql($values, array $fields = [], ?array $output = null, ?array &$bindings = [], ?string &$error = '')
     {
         list($error, $bindingCount) = array('', 1);
 
@@ -679,7 +679,7 @@ class Builder
                 }               
             }
 
-            return $compiler->compileStatementInsertValues($from, $fields, $values);
+            return $compiler->compileStatementInsertValues($from, $fields, $values, $output);
         }
 
         if ($values instanceof Closure) {
@@ -689,7 +689,7 @@ class Builder
         }
 
         if ($values instanceof self) {
-            return $compiler->compileStatementInsertSelect($from, $fields, $values->asSql());
+            return $compiler->compileStatementInsertSelect($from, $fields, $values->asSql(), $output);
         }
 
         return null;
