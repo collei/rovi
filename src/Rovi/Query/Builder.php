@@ -24,6 +24,8 @@ class Builder
     protected $offset = null;
     protected $limit = null;
 
+    protected $lastError = null;
+
     public function __construct(Connection $connection)
     {
         $this->builderID = bin2hex(random_bytes(4));
@@ -46,6 +48,7 @@ class Builder
             'orders' => $this->orders ?: 'Array()',
             'offset' => $this->offset ?? 'NULL',
             'limit' => $this->limit ?? 'NULL',
+            'lastError' => $this->lastError ?? 'NULL',
         ];
     }
 
@@ -94,6 +97,16 @@ class Builder
     public final function getBuilderID()
     {
         return $this->builderID;
+    }
+
+    public final function hasError()
+    {
+        return ! is_null($this->lastError);
+    }
+
+    public final function lastError()
+    {
+        return $this->lastError;
     }
 
     public function select(...$fields)
@@ -477,9 +490,22 @@ class Builder
 
     public function insert(array $values)
     {
-        if ($this->makeInsertSql($values, $sql, $bindings)) {
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','values'),true).'</pre></fieldset>';
+        if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
+            if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
+
+                echo "<fieldset><legend>insert::sql</legend>$sql</fieldset>";
+
+                return $result;
+            }
+
+            $this->lastError = $errors;
+
+            return false;
         }
+
+        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
+
+        return false;
     }
 
     public function insertSelect(array $fields, $values)
