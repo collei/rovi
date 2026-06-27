@@ -284,7 +284,7 @@ abstract class Model
     }
 
     /**
-     * Retrieves the given record as instance, if any.
+     * Retrieves the given record by primary key, if any.
      * 
      * @return static
      */
