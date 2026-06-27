@@ -98,9 +98,43 @@ abstract class Grammar
         'not between' => 'not between',
     ];
 
+    protected $dbEngineVersion = null;
+
     protected $defaultStringSize = 50;
     protected $defaultDecimalSize = 18;
     protected $defaultDecimalPrecision = 2;
+
+    abstract protected function init();
+
+    public final function __construct()
+    {
+        $this->init();
+    }
+
+    public final function engineVersion()
+    {
+        return $this->dbEngineVersion;
+    }
+
+    public final function engineVersionCompare(string $queried)
+    {
+        if (empty($this->dbEngineVersion) || empty($queried)) {
+            return -1;
+        }
+
+        $filler = function($n) {
+            while (strlen($n) < 4) $n = '0'.$n;
+            return $n;
+        };
+
+        list($set, $queried) = array(explode('.', $this->dbEngineVersion), explode('.', $queried));
+
+        list($set, $queried) = array(array_map($filler, $set), array_map($filler, $queried));
+        
+        list($set, $queried) = array(implode('.', $set), implode('.', $queried));
+
+        return strcasecmp($set, $queried);
+    }
 
     public function __debugInfo()
     {
