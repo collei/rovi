@@ -18,7 +18,8 @@
     ],
     "require": {
         "php": "^8.0",
-        "collei/collection": "dev-main"
+        "collei/collection": "dev-main",
+        "psr/log": "3.x-dev"
     },
     "autoload": {
         "psr-4": {
