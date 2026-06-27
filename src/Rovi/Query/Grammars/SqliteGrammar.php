@@ -2,6 +2,7 @@
 namespace Rovi\Query\Grammars;
 
 use DateTime;
+use PDO;
 
 class SqliteGrammar extends Grammar
 {
@@ -70,6 +71,15 @@ class SqliteGrammar extends Grammar
         'timestamp' => 'CURRENT_TIMESTAMP',
         'year' => 'YEAR(CURDATE())',
     ];
+
+    protected function init()
+    {
+        $dbh = new PDO('sqlite::memory:');
+        $sqliteVersion = trim($dbh->query('select sqlite_version()')->fetch()[0]);
+        $dbh = null;
+        
+        $this->dbEngineVersion = $sqliteVersion;
+    }
 
     public function isValidOperator($operator)
     {
