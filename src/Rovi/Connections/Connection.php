@@ -4,6 +4,8 @@ namespace Rovi\Connections;
 use Rovi\DatabaseException;
 use Rovi\Query\Builder;
 use Rovi\Query\Grammars\Grammar;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 use PDO;
 use PDOStatement;
