@@ -558,7 +558,8 @@ abstract class Grammar
     public function compileStatementInsertValues(
         string $table,
         array $fields,
-        array $values
+        array $values,
+        ?array $output = null
     ) {
         $sql = [];
 
@@ -566,19 +567,28 @@ abstract class Grammar
 
         $sql[] = $this->compileInsertValuesClause($values);
 
+        if (! empty($output)) {
+            $sql[] = $this->compileInsertOutputClause($output);
+        }
+
         return implode(' ', $sql);
     }
 
     public function compileStatementInsertSelect(
         string $table,
         array $fields,
-        string $selectSql
+        string $selectSql,
+        ?array $output = null
     ) {
         $sql = [];
 
         $sql[] = $this->compileInsertTable($table, $fields);
 
         $sql[] = $selectSql;
+
+        if ($output) {
+            $sql[] = $this->compileInsertOutputClause($output);
+        }
 
         return implode(' ', $sql);
     }
@@ -627,5 +637,10 @@ abstract class Grammar
     protected function compileDefaultValue($value)
     {
         return sprintf('DEFAULT %s', $value);
+    }
+
+    protected function compileInsertOutputClause(array $output)
+    {
+        return '';
     }
 }
