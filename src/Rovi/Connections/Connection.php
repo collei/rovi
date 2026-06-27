@@ -403,14 +403,16 @@ abstract class Connection
 	}
 
 	/**
-	 * Executes a insert statement that return the inserted ID, if any.
-	 * On fail, returns -1 and the third argument holds an object
+	 * Executes a insert statement.
+     * On success, returns a Result instance with property 'list' (list of inserted IDs)
+     * and property 'count' (number of inserted rows).
+	 * On fail, returns false and the third argument holds an object
      * describing the error ocurred.
 	 *
 	 * @param string $sql
      * @param array|null $data
      * @param mixed &$errors
-	 * @return int
+	 * @return Rovi\Connections\Result|false
 	 */
 	public function insert(string $sql, array $data = null, &$errors = null)
 	{
@@ -418,7 +420,27 @@ abstract class Connection
             if ($this->isOpen()) {
                 $stmt = $this->getPrepared($sql);
                 $stmt->execute($data);
-                return $this->getHandle()->lastInsertId();
+
+                $count = $stmt->rowCount();
+                $lastID = $this->getHandle()->lastInsertId();
+
+                $list = null;
+
+                try {
+                    $list = $stmt->fetchAll();
+                } catch (PDOException $e2) {
+                    //
+                }
+
+                if (empty($list)) {
+                    if (preg_match('/\s*\d+(\.\d+)?\s*/', $lastID) !== false) {
+                        $lastID = (int) (float) trim($lastID);
+                    }
+
+                    $list = is_int($lastID) ? range($lastID - $count + 1, $lastID) : array($lastID);
+                }
+
+                return Result::fromInsert($count, $list);
             }
 
             throw new DatabaseException($sql, sprintf('Connection %s not open!', $this->name));
@@ -430,37 +452,43 @@ abstract class Connection
             $errors = $this->processException($exception, $sql);
 		}
 
-        return -1;
+        return false;
 	}
 
 	/**
-	 * Executes an update statement. On success, returns how many rows affected
-     * (0 if none). On fail, returns -1 and the third argument holds an object
+	 * Executes an update statement.
+     * On success, returns a Result instance with a 'count' property.
+     * On fail, returns false and the third argument holds an object
      * describing the error ocurred.
 	 *
 	 * @param string $sql
      * @param array|null $data
      * @param mixed &$errors
-	 * @return int
+	 * @return Rovi\Connections\Result|false
 	 */
 	public function update(string $sql, array $data = null, &$errors = null)
     {
-        return $this->execute($sql, $data, $errors);
+        $count = $this->execute($sql, $data, $errors);
+
+        return ($count >= 0) ? Result::fromUpdate($count) : false;
     }
 
 	/**
-	 * Executes a delete statement. On success, returns how many rows removed
-     * (0 if none). On fail, returns -1 and the third argument holds an object
+	 * Executes a delete statement.
+     * On success, returns a Result instance with a 'count' property.
+     * On fail, returns false and the third argument holds an object
      * describing the error ocurred.
 	 *
 	 * @param string $sql
      * @param array|null $data
      * @param mixed &$errors
-	 * @return int
+	 * @return Rovi\Connections\Result|false
 	 */
 	public function delete(string $sql, array $data = null, &$errors = null)
     {
-        return $this->execute($sql, $data, $errors);
+        $count = $this->execute($sql, $data, $errors);
+
+        return ($count >= 0) ? Result::fromDelete($count) : false;
     }
 
 	/**
