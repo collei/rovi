@@ -89,9 +89,11 @@ abstract class Grammar
         '>=' => '>=',
         '<=' => '<=',
         '<>' => '<>',
-        'in' => 'in',
         'is' => 'is',
+        'in' => 'in',
         'not in' => 'not in',
+        'like' => 'like',
+        'not like' => 'not like',
         'between' => 'between',
         'not between' => 'not between',
     ];
