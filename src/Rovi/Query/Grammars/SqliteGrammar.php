@@ -139,4 +139,13 @@ class SqliteGrammar extends Grammar
     {
         return 'CONSTRAINT PRIMARY KEY (%s)';
     }
+
+    protected function compileInsertOutputClause($output)
+    {
+        if ($this->engineVersionCompare('3.35.0') >= 0) {
+            return sprintf('RETURNING %s', implode(', ', $output));
+        }
+
+        return '';
+    }
 }
