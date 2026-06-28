@@ -314,7 +314,7 @@ class Builder
             return $this->addNestedCondition('where', $field, $and);
         }
 
-        if (is_string($field)) {
+        if (is_string($field) || $field instanceof Expression) {
             list($operator, $value) = $this->normalizeOperation($operator, $value);
 
             return $this->addCondition('where', $field, $operator, $value, $and);
