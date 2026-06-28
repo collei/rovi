@@ -31,7 +31,7 @@ class Expression
      */
     public function __toString()
     {
-        return $this->expression;
+        return $this->toString();
     }
 
     /**
@@ -63,6 +63,16 @@ class Expression
      * @return string
      */
     public function toSql()
+    {
+        return $this->expression;
+    }
+
+    /**
+     * Returns the expression.
+     * 
+     * @return string
+     */
+    public function toString()
     {
         return $this->expression;
     }
