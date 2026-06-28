@@ -499,9 +499,7 @@ class Builder
 
         if ($this->makeSelectSql($sql, $bindings)) {
             if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
-                $result = json_decode(json_encode($result));
-
-                return $result;
+                return json_decode(json_encode($result));
             }
 
             $this->lastError = $errors;
