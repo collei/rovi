@@ -541,13 +541,27 @@ class Builder
 
     public function update(array $values)
     {
+        $bindings = [];
+
         if ($this->makeUpdateSql($values, $bindings, $sql)) {
             $sqlBindings = $this->bindingKeeper->getBindingsFor($sql);
 
             $bindings += $sqlBindings;
 
             echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','values'),true).'</pre></fieldset>';
+
+            if (false !== ($result = $this->connection->update($sql, $bindings, $errors))) {
+                return $result;
+            }
+
+            $this->lastError = $errors;
+
+            return false;
         }
+
+        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
+
+        return false;
     }
 
     public function delete()
