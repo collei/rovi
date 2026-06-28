@@ -316,7 +316,7 @@ abstract class Connection
 	 * @param string $sql
      * @param array|null $data
      * @param mixed &$errors
-	 * @return array
+	 * @return array|false
 	 */
 	public function select(string $sql, array $data = null, &$errors = null)
 	{
@@ -338,7 +338,7 @@ abstract class Connection
             $errors = $this->processException($exception, $sql);
 		}
 
-        return [];
+        return false;
 	}
 
 	/**
