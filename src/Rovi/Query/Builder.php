@@ -498,8 +498,6 @@ class Builder
         if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
             if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
 
-                echo "<fieldset><legend>insert::sql</legend>$sql</fieldset>";
-
                 return $result;
             }
 
