@@ -21,5 +21,12 @@ class SqliteConnection extends Connection
     protected function initialize()
     {
         $this->grammar = new SqliteGrammar();
+
+		$this->open();
+
+		$this->getHandle()->exec('PRAGMA synchronous=NORMAL');
+		$this->getHandle()->exec('PRAGMA cache_size=-8000');   // Cache de 8MB
+		$this->getHandle()->exec('PRAGMA temp_store=MEMORY');
+		$this->getHandle()->exec('PRAGMA mmap_size=268435456'); // 256MB mapeamento de memória		
     }
 }
