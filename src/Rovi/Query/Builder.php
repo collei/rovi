@@ -568,11 +568,23 @@ class Builder
 
     public function delete()
     {
+        list($sql, $bindings) = array('', []);
+        
         if ($this->makeDeleteSql($sql)) {
             $bindings = $this->bindingKeeper->getBindingsFor($sql);
 
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings'),true).'</pre></fieldset>';
+            if (false !== ($result = $this->connection->delete($sql, $bindings, $errors))) {
+                return $result;
+            }
+
+            $this->lastError = $errors;
+
+            return false;
         }
+
+        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
+
+        return false;
     }
 
     protected function makeSelectSql(?string &$sqlCode = null, ?array &$bindings = [])
