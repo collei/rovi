@@ -426,12 +426,20 @@ abstract class Connection
 
                 $list = null;
 
+                /**
+                 * Tries to fetch from OUTPUT clause (SqlServer) or
+                 * RETURNING clause (Sqlite), if any. It suppress exceptions.
+                 * In case of exception, just leaves the list empty.
+                 */
                 try {
                     $list = $stmt->fetchAll();
                 } catch (PDOException $e2) {
                     //
                 }
 
+                /**
+                 * If list cames empty, fills it accordingly.
+                 */
                 if (empty($list)) {
                     if (preg_match('/\s*\d+(\.\d+)?\s*/', $lastID) !== false) {
                         $lastID = (int) (float) trim($lastID);
