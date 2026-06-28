@@ -777,6 +777,8 @@ class Builder
 
             if ($nesting = $value instanceof self) {
                 $value = $value->asSql();
+            } elseif ($value instanceof Expression) {
+                $value = $value->toString();
             } else {
                 $binder = ':u' . ($bindingCount++);
 
