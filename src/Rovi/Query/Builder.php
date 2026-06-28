@@ -493,6 +493,25 @@ class Builder
         return $this->compileSelectSql();
     }
 
+    public function get()
+    {
+        if ($this->makeSelectSql($sql, $bindings)) {
+            if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
+                $result = json_decode(json_encode($result));
+
+                return $result;
+            }
+
+            $this->lastError = $errors;
+
+            return false;
+        }
+
+        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
+
+        return false;
+    }
+
     public function insert(array $values, ?array $output = null)
     {
         if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
@@ -538,6 +557,19 @@ class Builder
 
             echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings'),true).'</pre></fieldset>';
         }
+    }
+
+    protected function makeSelectSql(?string &$sqlCode = null, ?array &$bindings = [])
+    {
+        try {
+            $sqlCode = $this->compileSelectSql();
+            
+            $bindings = $this->bindingKeeper->getBindingsFor($sqlCode);
+        } catch (Throwable $e) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function makeInsertSql(array $values, ?array $output = null, ?string &$sql = null, ?array &$bindings = [])
