@@ -326,6 +326,7 @@ abstract class Connection
                 $stmt->execute($data);
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $stmt->closeCursor();
+                $stmt = null;
                 return $result;
             }
 
@@ -534,6 +535,7 @@ abstract class Connection
     /**
      * Returns prepared statement for the given $sql code.
      * 
+     * @param string $sql
      * @return PDOStatement
      * @throws PDOException
      */
@@ -542,12 +544,10 @@ abstract class Connection
         $hash = md5($sql);
 
         if (array_key_exists($hash, $this->prepared)) {
-            if ($this->prepared[$hash]) {
-                return $this->prepared[$hash];
-            }
+            return $this->prepared[$hash];
         }
 
-        return $this->prepared[$hash] = $this->open()->getHandle()->prepare($sql);
+        return $this->prepared[$hash] = $this->getHandle()->prepare($sql);
     }
 
     /**
