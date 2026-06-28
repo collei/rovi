@@ -495,6 +495,8 @@ class Builder
 
     public function get()
     {
+        list($sql, $bindings) = array('', []);
+
         if ($this->makeSelectSql($sql, $bindings)) {
             if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
                 $result = json_decode(json_encode($result));
@@ -514,6 +516,8 @@ class Builder
 
     public function insert(array $values, ?array $output = null)
     {
+        list($sql, $bindings) = array('', []);
+
         if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
             if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
 
@@ -532,6 +536,8 @@ class Builder
 
     public function insertSelect(array $fields, $values)
     {
+        list($sql, $bindings) = array('', []);
+
         if ($this->makeInsertSelectSql($fields, $sql, $values)) {
             $bindings = $this->bindingKeeper->getBindingsFor($sql);
 
