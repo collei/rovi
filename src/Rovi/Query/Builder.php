@@ -52,6 +52,11 @@ class Builder
         ];
     }
 
+    public static final function raw(string $expression)
+    {
+        return Expression::raw($expression);
+    }
+
     protected final function createSub()
     {
         return new self($this->connection);
