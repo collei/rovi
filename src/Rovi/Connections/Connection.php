@@ -323,7 +323,8 @@ abstract class Connection
 		try {
             if ($this->isOpen()) {
                 $stmt = $this->getPrepared($sql);
-                $stmt->execute($data);
+                $this->bindValuesTo($stmt, $data);
+                $stmt->execute();
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $stmt->closeCursor();
                 $stmt = null;
@@ -380,7 +381,8 @@ abstract class Connection
 		try {
             if ($this->isOpen()) {
                 $stmt = $this->getPrepared($sql);
-                $stmt->execute($data);
+                $this->bindValuesTo($stmt, $data);
+                $stmt->execute();
 
                 return function() use ($stmt) {
                     while ($row = $stmt->fetch()) {
@@ -420,7 +422,8 @@ abstract class Connection
 		try {
             if ($this->isOpen()) {
                 $stmt = $this->getPrepared($sql);
-                $stmt->execute($data);
+                $this->bindValuesTo($stmt, $data);
+                $stmt->execute();
 
                 $count = $stmt->rowCount();
                 $lastID = $this->getHandle()->lastInsertId();
@@ -516,7 +519,8 @@ abstract class Connection
 		try {
             if ($this->isOpen()) {
                 $stmt = $this->getPrepared($sql);
-                $stmt->execute($data);
+                $this->bindValuesTo($stmt, $data);
+                $stmt->execute();
                 return $stmt->rowCount();
             }
 
@@ -531,6 +535,28 @@ abstract class Connection
 
         return -1;
 	}
+
+    /**
+     * Executes proper value bindings to a statement.
+     * 
+     * @param PDOStatement $statement
+     * @param array $values
+     * @return void
+     */
+    protected function bindValuesTo(PDOStatement $statement, array $values)
+    {
+        foreach ($values as $binder => $value) {
+            if (substr($binder, 0, 1) !== ':') {
+                $binder = ':' . $binder;
+            }
+
+            if (is_int($value)) {
+                $statement->bindValue($binder, (int) $value, PDO::PARAM_INT);
+            } else {
+                $statement->bindValue($binder, $value);
+            }
+        }
+    }
 
     /**
      * Returns prepared statement for the given $sql code.
