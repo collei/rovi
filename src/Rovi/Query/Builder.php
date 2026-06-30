@@ -530,8 +530,14 @@ class Builder
         if ($this->makeInsertSelectSql($fields, $sql, $values)) {
             $bindings = $this->bindingKeeper->getBindingsFor($sql);
 
-            echo '<fieldset><legend>'.__FUNCTION__.'</legend><pre>'.print_r(compact('sql','bindings','fields','values'),true).'</pre></fieldset>';
+            if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
+                return $result;
+            }
+
+            return $this->setLastCustomError($errors);
         }
+
+        return $this->setLastError('malformed SQL', $sql);
     }
 
     public function update(array $values)
