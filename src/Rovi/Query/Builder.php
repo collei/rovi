@@ -502,14 +502,10 @@ class Builder
                 return json_decode(json_encode($result));
             }
 
-            $this->lastError = $errors;
-
-            return false;
+            return $this->setLastCustomError($errors);
         }
 
-        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
-
-        return false;
+        return $this->setLastError('malformed SQL', $sql);
     }
 
     public function insert(array $values, ?array $output = null)
@@ -518,18 +514,13 @@ class Builder
 
         if ($this->makeInsertSql($values, $output, $sql, $bindings)) {
             if (false !== ($result = $this->connection->insert($sql, $bindings, $errors))) {
-
                 return $result;
             }
 
-            $this->lastError = $errors;
-
-            return false;
+            return $this->setLastCustomError($errors);
         }
 
-        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
-
-        return false;
+        return $this->setLastError('malformed SQL', $sql);
     }
 
     public function insertSelect(array $fields, $values)
@@ -556,14 +547,10 @@ class Builder
                 return $result;
             }
 
-            $this->lastError = $errors;
-
-            return false;
+            return $this->setLastCustomError($errors);
         }
 
-        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
-
-        return false;
+        return $this->setLastError('malformed SQL', $sql);
     }
 
     public function delete()
@@ -582,7 +569,33 @@ class Builder
             return false;
         }
 
-        $this->lastError = (object) ['error' => 'malformed SQL', 'sql' => $sql];
+        return $this->setLastError('malformed SQL', $sql);
+    }
+
+    /**
+     * Set lastError properties and returns false. For internal use.
+     * 
+     * @param string $error
+     * @param string $sql
+     * @param mixed ...$context
+     * @return false
+     */
+    protected function setLastError(string $error, string $sql, ...$context)
+    {
+        $this->lastError = (object) compact('error','sql','context');
+
+        return false;
+    }
+
+    /**
+     * Set a custom lastError and returns false. For internal use.
+     * 
+     * @param mixed $error
+     * @return false
+     */
+    protected function setLastCustomError($error)
+    {
+        $this->lastError = $error;
 
         return false;
     }
