@@ -230,7 +230,7 @@ abstract class Model
             return $this->connection;
         }
 
-        if (Connector::hasConnection()) {
+        if (Connector::hasConnection(static::CONNECTION)) {
             return $this->connection = Connector::getConnection(static::CONNECTION);
         }
 
