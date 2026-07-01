@@ -286,7 +286,7 @@ abstract class Model
     protected final function hydrate(array $fields)
     {
         foreach ($fields as $name => $value) {
-            $this->retrieved[$name] = static::DEFAULTS[$name] ?? null;
+            $this->retrieved[$name] = $value ?? null;
         }
 
         $this->modified = [];
