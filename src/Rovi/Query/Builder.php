@@ -8,24 +8,81 @@ use Rovi\Query\Keepers\BindingKeeper;
 use Rovi\Query\Expressions\Expression;
 use Rovi\Query\Expressions\Joiner;
 
+/**
+ * Query builder.
+ */
 class Builder
 {
-    protected $builderID = null; 
+    /**
+     * @var string
+     */
+    protected $builderID = null;
+
+    /**
+     * @var Rovi\Connections\Connection
+     */
     protected $connection;
+
+    /**
+     * @var Rovi\Query\Keepers\BindingKeeper
+     */
     protected $bindingKeeper;
 
+    /**
+     * @var array
+     */
     protected $select = [];
+
+    /**
+     * @var array
+     */
     protected $from = null;
+
+    /**
+     * @var array
+     */
     protected $joins = [];
+
+    /**
+     * @var array
+     */
     protected $where = [];
+
+    /**
+     * @var array
+     */
     protected $groups = [];
+
+    /**
+     * @var array
+     */
     protected $having = [];
+
+    /**
+     * @var array
+     */
     protected $orders = [];
+
+    /**
+     * @var int
+     */
     protected $offset = null;
+
+    /**
+     * @var int
+     */
     protected $limit = null;
 
+    /**
+     * @var mixed
+     */
     protected $lastError = null;
 
+    /**
+     * Instantiate.
+     * 
+     * @param Rovi\Connections\Connection $connection
+     */
     public function __construct(Connection $connection)
     {
         $this->builderID = bin2hex(random_bytes(4));
@@ -33,6 +90,11 @@ class Builder
         $this->bindingKeeper = BindingKeeper::instance($connection);
     }
 
+    /**
+     * For internal use of PHP.
+     * 
+     * @return array
+     */
     public function __debugInfo()
     {
         return [
@@ -52,21 +114,44 @@ class Builder
         ];
     }
 
+    /**
+     * Shorthand of raw sql code.
+     * 
+     * @static
+     * @param string $expression
+     * @return Rovi\Query\Expressions\Expression
+     */
     public static final function raw(string $expression)
     {
         return Expression::raw($expression);
     }
 
+    /**
+     * Create subquery builder.
+     * 
+     * @return self
+     */
     protected final function createSub()
     {
         return new self($this->connection);
     }
 
+    /**
+     * Create join builder.
+     * 
+     * @return Rovi\Query\Expressions\Joiner
+     */
     protected final function createJoiner()
     {
         return new Joiner($this->connection, $this);
     }
 
+    /**
+     * Return clause conditions. $clause may be either 'where' or 'having'.
+     * 
+     * @param string $clause
+     * @return array
+     */
     protected final function conditions(string $clause)
     {
         if (in_array($clause, ['where','having'])) {
@@ -76,6 +161,12 @@ class Builder
         return [];
     }
 
+    /**
+     * Processes values.
+     * 
+     * @param mixed $value
+     * @return array
+     */
     protected final function processValue($value)
     {
         if ($value instanceof Closure) {
@@ -89,31 +180,62 @@ class Builder
         return $value;
     }
 
+    /**
+     * Return the connection.
+     * 
+     * @return Rovi\Connections\Connection
+     */
     public final function getConnection()
     {
         return $this->connection;
     }
 
+    /**
+     * Return the bindings for the builder.
+     * 
+     * @return array
+     */
     public final function getBindings()
     {
         return $this->bindingKeeper->getBindings($this->getBuilderID());
     }
 
+    /**
+     * Return the builder ID.
+     * 
+     * @return string
+     */
     public final function getBuilderID()
     {
         return $this->builderID;
     }
 
+    /**
+     * Tells if any error occurred.
+     * 
+     * @return bool
+     */
     public final function hasError()
     {
         return ! is_null($this->lastError);
     }
 
+    /**
+     * Return the Builder last error.
+     * 
+     * @return mixed
+     */
     public final function lastError()
     {
         return $this->lastError;
     }
 
+    /**
+     * Define the fields to be selected.
+     * 
+     * @param string|array|Closure|self
+     * @return $this
+     */
     public function select(...$fields)
     {
         $argument = [];
@@ -149,6 +271,13 @@ class Builder
         return $this;
     }
 
+    /**
+     * Define the table to be searched.
+     * 
+     * @param string $table
+     * @param string $as = null
+     * @return $this
+     */
     public function table(string $table, ?string $as = null)
     {
         $this->from = empty($as) ? [$table] : [$as => $table];
@@ -156,11 +285,25 @@ class Builder
         return $this;
     }
 
+    /**
+     * Alias of table().
+     * 
+     * @param string $table
+     * @param string $as = null
+     * @return $this
+     */
     public function from(string $table, ?string $as = null)
     {
         return $this->table(...func_get_args());
     }
 
+    /**
+     * Define a subquery as the table to be searched.
+     * 
+     * @param Closure|self $table
+     * @param string $as
+     * @return $this
+     */
     public function fromSub($table, string $as)
     {
         if (preg_match('/^[A-Za-z_]+/', $as) !== 1) {
@@ -182,6 +325,16 @@ class Builder
         return $this;
     }
 
+    /**
+     * Define a join to another table.
+     * 
+     * @param string $table
+     * @param mixed $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @param string $type = 'inner'
+     * @return $this
+     */
     public function join(string $table, $field, $operator = null, $value = null, $type = 'inner')
     {
         if ($field instanceof Closure) {
@@ -197,6 +350,17 @@ class Builder
         throw new InvalidArgumentException(sprintf('Invalid argument type for join field: \'%s\'', gettype($field)));
     }
 
+    /**
+     * Define a join to another table.
+     * 
+     * @param Closure|self $table
+     * @param string $as
+     * @param Closure $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @param string $type = 'inner'
+     * @return $this
+     */
     public function joinSub($table, string $as, $field, $operator = null, $value = null, $type = 'inner')
     {
         if (preg_match('/^[A-Za-z_]+/', $as) !== 1) {
@@ -226,26 +390,73 @@ class Builder
         throw new InvalidArgumentException(sprintf('Invalid argument type for join field: \'%s\'', gettype($field)));
     }
 
+    /**
+     * Define an inner join to another table.
+     * 
+     * @param string $table
+     * @param mixed $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function innerJoin($table, $field, $operator = null, $value = null)
     {
         return $this->join($table, $field, $operator, $value, 'inner');
     }
 
+    /**
+     * Define an outer join to another table.
+     * 
+     * @param string $table
+     * @param mixed $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function outerJoin($table, $field, $operator = null, $value = null)
     {
         return $this->join($table, $field, $operator, $value, 'outer');
     }
 
+    /**
+     * Define a left join to another table.
+     * 
+     * @param string $table
+     * @param mixed $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function leftJoin($table, $field, $operator = null, $value = null)
     {
         return $this->join($table, $field, $operator, $value, 'left');
     }
 
+    /**
+     * Define a right join to another table.
+     * 
+     * @param string $table
+     * @param mixed $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function rightJoin($table, $field, $operator = null, $value = null)
     {
         return $this->join($table, $field, $operator, $value, 'right');
     }
 
+    /**
+     * Add a join condition.
+     * 
+     * @param array|string $table
+     * @param mixed $field
+     * @param mixed $operator
+     * @param mixed $value
+     * @param string $type = 'inner'
+     * @param string $and = 'and' 
+     * @return $this
+     */
     protected function addJoinCondition($table, $field, $operator, $value, string $type = 'inner', string $and = 'and')
     {
         if (! is_array($table) && ! is_string($table)) {
@@ -283,6 +494,14 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add several join conditions.
+     * 
+     * @param array|string $table
+     * @param Closure $joinOns
+     * @param string $type = 'inner'
+     * @return $this
+     */
     protected function addJoinConditions($table, Closure $joinOns, string $type = 'inner')
     {
         if (! is_array($table) && ! is_string($table)) {
