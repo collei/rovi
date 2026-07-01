@@ -4,6 +4,7 @@ namespace Rovi\Query;
 use Closure;
 use InvalidArgumentException;
 use Rovi\Connections\Connection;
+use Rovi\Connections\Result;
 use Rovi\Query\Keepers\BindingKeeper;
 use Rovi\Query\Expressions\Expression;
 use Rovi\Query\Expressions\Joiner;
@@ -525,6 +526,15 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add a where clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @param string $and = 'and'
+     * @return $this
+     */
     public function where($field, $operator = null, $value = null, string $and = 'and')
     {
         $and = strtolower($and) === 'or' ? 'or' : 'and';
@@ -542,16 +552,39 @@ class Builder
         throw new InvalidArgumentException(sprintf('Invalid argument type for where field: \'%s\'', gettype($field)));
     }
 
+    /**
+     * Add a and-where clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function andWhere($field, $operator = null, $value = null)
     {
         return $this->where($field, $operator, $value, 'and');
     }
 
+    /**
+     * Add a or-where clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function orWhere($field, $operator = null, $value = null)
     {
         return $this->where($field, $operator, $value, 'or');
     }
 
+    /**
+     * Helper to flexibilize operator omission.
+     * 
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return array 
+     */
     protected function normalizeOperation($operator = null, $value = null)
     {
         if (is_null($value)) {
@@ -569,6 +602,16 @@ class Builder
         throw new InvalidArgumentException(sprintf('Invalid operator: \'%s\'', $operator));
     }
 
+    /**
+     * Add a condition into a given clause.
+     * 
+     * @param string $clause
+     * @param string $field
+     * @param mixed $operator
+     * @param mixed $value
+     * @param string $and
+     * @return $this
+     */
     protected function addCondition(string $clause, string $field, $operator, $value, string $and)
     {
         list($type, $and) = array('plain', strtoupper($and));
@@ -588,6 +631,14 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add a nesting condition into a given clause.
+     * 
+     * @param string $clause
+     * @param Closure $subquery
+     * @param string $and
+     * @return $this
+     */
     protected function addNestedCondition(string $clause, Closure $subquery, string $and)
     {
         list($type, $and) = array('nested', strtoupper($and));
@@ -605,6 +656,12 @@ class Builder
         return $this;
     }
 
+    /**
+     * Adds a group by instruction.
+     * 
+     * @param mixed ...$groups
+     * @return $this
+     */
     public function groupBy(...$groups)
     {
         foreach ($groups as $group) {
@@ -622,6 +679,15 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add a having condition.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @param string $and = 'and'
+     * @return $this
+     */
     public function having($field, $operator = null, $value = null, string $and = 'and')
     {
         $and = strtolower($and) === 'or' ? 'or' : 'and';
@@ -630,7 +696,7 @@ class Builder
             return $this->addNestedCondition('having', $field, $and);
         }
 
-        if (is_string($field)) {
+        if (is_string($field) || $field instanceof Expression) {
             list($operator, $value) = $this->normalizeOperation($operator, $value);
 
             return $this->addCondition('having', $field, $operator, $value, $and);
@@ -639,16 +705,39 @@ class Builder
         throw new InvalidArgumentException(sprintf('Invalid argument type for where field: \'%s\'', gettype($field)));
     }
 
+    /**
+     * Add a and-having condition.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function andHaving($field, $operator = null, $value = null)
     {
         return $this->having($field, $operator, $value, 'and');
     }
 
+    /**
+     * Add a or-having condition.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return $this
+     */
     public function orHaving($field, $operator = null, $value = null)
     {
         return $this->having($field, $operator, $value, 'or');
     }
 
+    /**
+     * Orders a query by a given field.
+     * 
+     * @param string|array|Expression $order
+     * @param bool $asc = true
+     * @return $this
+     */
     public function orderBy($order, bool $asc = true)
     {
         if (is_string($order) || $order instanceof Expression) {
@@ -672,6 +761,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Removes the order by clause from the current query.
+     * 
+     * @return $this
+     */
     public function reorder()
     {
         $this->orders = [];
@@ -679,6 +773,12 @@ class Builder
         return $this;
     }
 
+    /**
+     * Adds a offset instruction.
+     * 
+     * @param int $offset
+     * @return $this
+     */
     public function offset(int $offset)
     {
         $this->offset = $offset;
@@ -686,6 +786,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Removes the offset instruction from the query.
+     * 
+     * @return $this
+     */
     public function removeOffset()
     {
         $this->offset = null;
@@ -693,6 +798,12 @@ class Builder
         return $this;
     }
 
+    /**
+     * Adds a limit instruction.
+     * 
+     * @param int $limit
+     * @return $this
+     */
     public function limit(int $limit)
     {
         $this->limit = $limit;
@@ -700,6 +811,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Removes the limit instruction from the query.
+     * 
+     * @return $this
+     */
     public function removeLimit()
     {
         $this->limit = null;
@@ -707,11 +823,21 @@ class Builder
         return $this;
     }
 
+    /**
+     * Returns the query as select SQL string.
+     * 
+     * @return string
+     */
     public function asSql()
     {
         return $this->compileSelectSql();
     }
 
+    /**
+     * Performs the query and retrieve results.
+     * 
+     * @return mixed
+     */
     public function get()
     {
         list($sql, $bindings) = array('', []);
@@ -727,6 +853,13 @@ class Builder
         return $this->setLastError('malformed SQL', $sql);
     }
 
+    /**
+     * Performs a insert values query.
+     * 
+     * @param array $values
+     * @param ?array $output = null
+     * @return Rovi\Connections\Result|false
+     */
     public function insert(array $values, ?array $output = null)
     {
         list($sql, $bindings) = array('', []);
@@ -742,7 +875,14 @@ class Builder
         return $this->setLastError('malformed SQL', $sql);
     }
 
-    public function insertSelect(array $fields, $values)
+    /**
+     * Performs a insert select query.
+     * 
+     * @param array $fields
+     * @param Rovi\Query\Builder $values
+     * @return Rovi\Connections\Result|false
+     */
+    public function insertSelect(array $fields, Builder $values)
     {
         list($sql, $bindings) = array('', []);
 
@@ -759,6 +899,12 @@ class Builder
         return $this->setLastError('malformed SQL', $sql);
     }
 
+    /**
+     * Performs a update query.
+     * 
+     * @param array $values
+     * @return Rovi\Connections\Result|false
+     */
     public function update(array $values)
     {
         list($sql, $bindings) = array('', []);
@@ -778,6 +924,11 @@ class Builder
         return $this->setLastError('malformed SQL', $sql);
     }
 
+    /**
+     * Performs a delete query.
+     * 
+     * @return Rovi\Connections\Result|false
+     */
     public function delete()
     {
         list($sql, $bindings) = array('', []);
@@ -825,6 +976,13 @@ class Builder
         return false;
     }
 
+    /**
+     * Returns the select sql code and bindings through parameters.
+     * 
+     * @param ?string &$sqlCode = null
+     * @param ?array $bindings = []
+     * @return bool
+     */
     protected function makeSelectSql(?string &$sqlCode = null, ?array &$bindings = [])
     {
         try {
@@ -838,6 +996,15 @@ class Builder
         return true;
     }
 
+    /**
+     * Returns the insert values sql code and bindings through parameters.
+     * 
+     * @param array $values
+     * @param ?array $output = null
+     * @param ?string &$sql = null
+     * @param ?array $bindings = []
+     * @return bool
+     */
     protected function makeInsertSql(array $values, ?array $output = null, ?string &$sql = null, ?array &$bindings = [])
     {
         if (false === ($sqlCode = $this->compileInsertSql($values, [], $output, $bindings, $error))) {
@@ -851,6 +1018,14 @@ class Builder
         return true;
     }
 
+    /**
+     * Returns the insert-select sql code and bindings through parameters.
+     * 
+     * @param array $fields
+     * @param ?string &$sql = null
+     * @param Closure|Builder $values
+     * @return bool
+     */
     protected function makeInsertSelectSql(array $fields, ?string &$sql = null, $values)
     {
         if (! $values instanceof Closure && ! $values instanceof self) {
@@ -870,6 +1045,14 @@ class Builder
         return true;
     }
 
+    /**
+     * Returns the update sql code and bindings through parameters.
+     * 
+     * @param array $values
+     * @param ?array $bindings = []
+     * @param ?string &$sql = null
+     * @return bool
+     */
     protected function makeUpdateSql(array $values, ?array &$bindings = [], ?string &$sql = null)
     {
         if (false === ($sqlCode = $this->compileUpdateSql($values, $bindings, $error))) {
@@ -883,6 +1066,12 @@ class Builder
         return true;
     }
 
+    /**
+     * Returns the delete sql code through parameters.
+     * 
+     * @param ?string &$sql = null
+     * @return bool
+     */
     protected function makeDeleteSql(?string &$sql = null)
     {
         if (false === ($sqlCode = $this->compileDeleteSql($error))) {
@@ -896,6 +1085,11 @@ class Builder
         return true;
     }
 
+    /**
+     * Compiles the query into a select sql.
+     * 
+     * @return string
+     */
     protected function compileSelectSql()
     {
         $compiler = $this->getConnection()->getGrammar();
@@ -939,6 +1133,16 @@ class Builder
         return $sql;
     }
 
+    /**
+     * Compiles the query into a insert sql.
+     * 
+     * @param array|Closure|Builder $values
+     * @param array $fields = []
+     * @param ?array $output = null
+     * @param ?array &$bindings = []
+     * @param ?string &$error = ''
+     * @return string|null
+     */
     protected function compileInsertSql($values, array $fields = [], ?array $output = null, ?array &$bindings = [], ?string &$error = '')
     {
         list($error, $bindingCount) = array('', 1);
@@ -996,6 +1200,14 @@ class Builder
         return null;
     }
 
+    /**
+     * Compiles the query into a update sql.
+     * 
+     * @param array $values
+     * @param ?array &$bindings = []
+     * @param ?string &$error = ''
+     * @return string
+     */
     protected function compileUpdateSql(array $values, ?array &$bindings = [], ?string &$error = '')
     {
         list($error, $bindingCount) = array('', 1);
@@ -1047,6 +1259,12 @@ class Builder
         return $sql;
     }
 
+    /**
+     * Compiles the query into a delete sql.
+     * 
+     * @param ?string &$error = ''
+     * @return string
+     */
     protected function compileDeleteSql(?string &$error = '')
     {
         $error = '';
