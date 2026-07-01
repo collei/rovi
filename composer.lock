@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/collei/collection.git",
-                "reference": "c581aa44371cc19aea630a5095a8a42520eb2d7a"
+                "reference": "6b5d624526c7f4613397e6439dd901518cf93bcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/collei/collection/zipball/c581aa44371cc19aea630a5095a8a42520eb2d7a",
-                "reference": "c581aa44371cc19aea630a5095a8a42520eb2d7a",
+                "url": "https://api.github.com/repos/collei/collection/zipball/6b5d624526c7f4613397e6439dd901518cf93bcc",
+                "reference": "6b5d624526c7f4613397e6439dd901518cf93bcc",
                 "shasum": ""
             },
             "require": {
@@ -52,7 +52,7 @@
                 "source": "https://github.com/collei/collection/tree/main",
                 "issues": "https://github.com/collei/collection/issues"
             },
-            "time": "2026-05-30T18:13:08+00:00"
+            "time": "2026-07-01T23:07:22+00:00"
         },
         {
             "name": "psr/log",
