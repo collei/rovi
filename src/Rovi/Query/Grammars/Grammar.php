@@ -96,6 +96,8 @@ abstract class Grammar
         'not like' => 'not like',
         'between' => 'between',
         'not between' => 'not between',
+        'exists' => 'exists',
+        'not exists' => 'not exists',
     ];
 
     protected $dbEngineVersion = null;
@@ -503,7 +505,15 @@ abstract class Grammar
         }
 
         if ($value instanceof Expression) {
+            if (in_array($operator, ['EXISTS','NOT EXISTS'])) {
+                return sprintf('(%s (%s))', $operator, $value);
+            }
+
             return sprintf('(%s %s (%s))', $field, $operator, $value);
+        }
+
+        if (in_array($operator, ['EXISTS','NOT EXISTS'])) {
+            return sprintf('(%s (%s))', $operator, $value);
         }
 
         return sprintf('(%s %s %s)', $field, $operator, $value);
