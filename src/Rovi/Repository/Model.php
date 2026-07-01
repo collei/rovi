@@ -80,6 +80,19 @@ abstract class Model
     }
 
     /**
+     * For use of PHP debugging functions.
+     * 
+     * @param array
+     */
+    public function __debugInfo()
+    {
+        return [
+            'retrieved' => $this->retrieved,
+            'modified' => $this->modified,
+        ];
+    }
+
+    /**
      * Retrieves a value from table or relationship.
      * 
      * @param string $name
