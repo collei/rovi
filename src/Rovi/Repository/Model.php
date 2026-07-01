@@ -71,7 +71,7 @@ abstract class Model
     public function __construct(array $fields = [])
     {
         foreach ($fields as $name => $value) {
-            if (! array_key_exists($name, $this->$retrieved)) {
+            if (! array_key_exists($name, $this->retrieved)) {
                 $this->retrieved[$name] = static::DEFAULTS[$name] ?? null;
             }
 
@@ -117,13 +117,13 @@ abstract class Model
     {
         $name = $this->transformFieldNamesFrom($name);
         
-        if ($this->hydrated && (! array_key_exists($name, $this->$retrieved))) {
+        if ($this->hydrated && (! array_key_exists($name, $this->retrieved))) {
             throw new RoviModelException(sprintf(
                 'Not found property \'%s\' on table \'%s\'', $name, static::TABLE
             ));
         }
 
-        $this->$modified[$name] = $value;
+        $this->modified[$name] = $value;
     }
 
     /**
@@ -136,7 +136,7 @@ abstract class Model
     {
         $name = $this->transformFieldNamesFrom($name);
         
-        return (! $this->recent) && array_key_exists($name, $this->$retrieved);
+        return (! $this->recent) && array_key_exists($name, $this->retrieved);
     }
 
     /**
@@ -155,7 +155,7 @@ abstract class Model
             ));
         }
 
-        $this->$modified[$name] = null;
+        $this->modified[$name] = null;
     }
 
     /**
