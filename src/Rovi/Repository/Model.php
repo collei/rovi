@@ -210,6 +210,16 @@ abstract class Model
     }
 
     /**
+     * Returns a Builder for this model.
+     * 
+     * @return Rovi\Repository\Builder
+     */
+    public static function getQuery()
+    {
+        return (new Builder(static::class, (new static)->connection()))->table(static::TABLE);
+    }
+
+    /**
      * Retrieves the model's connection.
      * 
      * @return Rovi\Connections\Connection
@@ -317,5 +327,34 @@ abstract class Model
         }
 
         return null;
+    }
+
+    /**
+     * For use of Rovi\Repository\Builder.
+     * 
+     * @param mixed $item
+     * @param int|string $key = null
+     * @return static
+     */
+    public static final function mapIntoInstance($item, $key = null)
+    {
+        return (new static())->hydrate((array) $item);
+    }
+
+    /**
+     * Return all rows of the underlying table as Model instances.
+     * 
+     * @param string ...$fields
+     * @return Collei\Collections\Collection|array
+     */
+    public static final function all(string ...$fields)
+    {
+        if (count($fields) > 0) {
+            return $this->connection()
+                        ->table(static::TABLE)
+                        ->getAsArray(...$fields);
+        }
+
+        return static::getQuery()->get();
     }
 }
