@@ -46,7 +46,7 @@ abstract class Model
     /**
      * @var \Rovi\Connections\Connection
      */
-    private $connection;
+    private $connection = null;
 
     /**
      * @var bool
