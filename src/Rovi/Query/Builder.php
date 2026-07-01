@@ -8,6 +8,7 @@ use Rovi\Connections\Result;
 use Rovi\Query\Keepers\BindingKeeper;
 use Rovi\Query\Expressions\Expression;
 use Rovi\Query\Expressions\Joiner;
+use Collei\Collections\Collection;
 
 /**
  * Query builder.
@@ -1088,14 +1089,23 @@ class Builder
     /**
      * Performs the query and retrieve results.
      * 
-     * @return mixed
+     * @param string ...$fields
+     * @return Collei\Collections\Collection|array|false
      */
-    public function get()
+    public function get(string ...$fields)
     {
         list($sql, $bindings) = array('', []);
 
+        if ($fields) {
+            $this->select(...$fields);
+        }
+
         if ($this->makeSelectSql($sql, $bindings)) {
             if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
+                if (class_exists(Collection::class, true)) {
+                    return new Collection(json_decode(json_encode($result)));
+                }
+
                 return json_decode(json_encode($result));
             }
 
@@ -1103,6 +1113,29 @@ class Builder
         }
 
         return $this->setLastError('malformed SQL', $sql);
+    }
+
+    /**
+     * Performs the query and retrieve results.
+     * 
+     * @param string ...$fields
+     * @return array
+     */
+    public function getAsArray(string ...$fields)
+    {
+        list($sql, $bindings) = array('', []);
+
+        if ($fields) {
+            $this->select(...$fields);
+        }
+
+        if ($this->makeSelectSql($sql, $bindings)) {
+            if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
+                return json_decode(json_encode($result), true, 512, JSON_OBJECT_AS_ARRAY);
+            }
+        }
+
+        return [];
     }
 
     /**
