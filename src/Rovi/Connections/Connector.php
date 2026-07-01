@@ -121,6 +121,8 @@ final class Connector
             $name = 'DBC' . (new DateTime())->format('YmdHisu');
         }
 
+        $connection->name($name);
+
         return self::$connectionPool[$name] = $connection;
 	}
 
