@@ -579,6 +579,258 @@ class Builder
     }
 
     /**
+     * Add a where between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereBetween($field, array $range, string $and = 'and')
+    {
+        if (count($array) !== 2) {
+            throw new InvalidArgumentException('second argument must be an array with exactly 2 elements');
+        }
+
+        return $this->where($field, 'between', $range, $and);
+    }
+
+    /**
+     * Add an and-where between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @return $this
+     */
+    public function andWhereBetween($field, array $range)
+    {
+        return $this->whereBetween($field, $range, 'and');
+    }
+
+    /**
+     * Add an or-where between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @return $this
+     */
+    public function orWhereBetween($field, array $range)
+    {
+        return $this->whereBetween($field, $range, 'or');
+    }
+
+    /**
+     * Add a where not between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereNotBetween($field, array $range, string $and = 'and')
+    {
+        if (count($array) !== 2) {
+            throw new InvalidArgumentException('second argument must be an array with exactly 2 elements');
+        }
+
+        return $this->where($field, 'not between', $range, $and);
+    }
+
+    /**
+     * Add an and-where not between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @return $this
+     */
+    public function andWhereNotBetween($field, array $range)
+    {
+        return $this->whereNotBetween($field, $range, 'and');
+    }
+
+    /**
+     * Add an or-where not between clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array $range = null
+     * @return $this
+     */
+    public function orWhereNotBetween($field, array $range)
+    {
+        return $this->whereNotBetween($field, $range, 'or');
+    }
+
+    /**
+     * Add a where in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereIn($field, $list, string $and = 'and')
+    {
+        if ((! $list instanceof Closure) && (! $list instanceof self) && (! is_array($list))) {
+            throw new InvalidArgumentException('argument must be either an array, a Closure or a Builder');
+        }
+
+        return $this->where($field, 'in', $list, $and);
+    }
+
+    /**
+     * Add an and-where in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @return $this
+     */
+    public function andWhereIn($field, $list)
+    {
+        return $this->whereIn($field, $list, 'and');
+    }
+
+    /**
+     * Add an or-where in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @return $this
+     */
+    public function orWhereIn($field, $list)
+    {
+        return $this->whereIn($field, $list, 'or');
+    }
+
+    /**
+     * Add a where not in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereNotIn($field, $list, string $and = 'and')
+    {
+        if ((! $list instanceof Closure) && (! $list instanceof self) && (! is_array($list))) {
+            throw new InvalidArgumentException('argument must be either an array, a Closure or a Builder');
+        }
+
+        return $this->where($field, 'not in', $list, $and);
+    }
+
+    /**
+     * Add an and-where not in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @return $this
+     */
+    public function andWhereNotIn($field, $list)
+    {
+        return $this->whereNotIn($field, $list, 'and');
+    }
+
+    /**
+     * Add an or-where not in clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param array|Closure|Builder $list
+     * @return $this
+     */
+    public function orWhereNotIn($field, $list)
+    {
+        return $this->whereNotIn($field, $list, 'or');
+    }
+
+    /**
+     * Add a where exists clause.
+     * 
+     * @param Closure|self $callback
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereExists($subquery, string $and = 'and')
+    {
+        if ((! $subquery instanceof Closure) && (! $subquery instanceof self)) {
+            throw new InvalidArgumentException('argument must be either a Closure or a Builder');
+        }
+
+        if ($subquery instanceof Closure) {
+            $subquery($sub = $this->createSub());
+            
+            $subquery = $sub;
+        }
+
+        return $this->where(self::raw(''), 'exists', $subquery, $and);
+    }
+
+    /**
+     * Add an and-where exists clause.
+     * 
+     * @param Closure|self $callback
+     * @return $this
+     */
+    public function andWhereExists($subquery)
+    {
+        return $this->whereExists($subquery, 'and');
+    }
+
+    /**
+     * Add an or-where exists clause.
+     * 
+     * @param Closure|self $callback
+     * @return $this
+     */
+    public function orWhereExists($subquery)
+    {
+        return $this->whereExists($subquery, 'or');
+    }
+
+    /**
+     * Add a where not exists clause.
+     * 
+     * @param Closure|self $callback
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereNotExists($subquery, string $and = 'and')
+    {
+        if ((! $subquery instanceof Closure) && (! $subquery instanceof self)) {
+            throw new InvalidArgumentException('argument must be either a Closure or a Builder');
+        }
+
+        if ($subquery instanceof Closure) {
+            $subquery($sub = $this->createSub());
+            
+            $subquery = $sub;
+        }
+
+        return $this->where(self::raw(''), 'not exists', $subquery, $and);
+    }
+
+    /**
+     * Add an and-where not exists clause.
+     * 
+     * @param Closure|self $callback
+     * @return $this
+     */
+    public function andWhereNotExists($subquery)
+    {
+        return $this->whereNotExists($subquery, 'and');
+    }
+
+    /**
+     * Add an or-where not exists clause.
+     * 
+     * @param Closure|self $callback
+     * @return $this
+     */
+    public function orWhereNotExists($subquery)
+    {
+        return $this->whereNotExists($subquery, 'or');
+    }
+
+    /**
      * Helper to flexibilize operator omission.
      * 
      * @param mixed $operator = null
