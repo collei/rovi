@@ -104,6 +104,25 @@ abstract class Connection
 	}
 
     /**
+     * Returns the name of the connection.
+     * If a name is passed, changes the name of the connection to the given
+     * argument and retutrns the old name.
+     * 
+     * @param string|null $newName = null
+     * @return string
+     */
+    public function name(?string $newName = null)
+    {
+        if (! empty($newName)) {
+            list($old, $this->name) = array($this->name, $newName);
+
+            return $old;
+        }
+
+        return $this->name;
+    }
+
+    /**
      * Retrieves the grammar;
      * 
      * @return string|null
