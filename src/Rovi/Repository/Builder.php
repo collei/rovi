@@ -7,8 +7,14 @@ use InvalidArgumentException;
 use Rovi\Query\Builder as QueryBuilder;
 use Rovi\Connections\Connection;
 
+/**
+ * Model query builder.
+ */
 class Builder
 {
+    /**
+     * @var array<string>
+     */
     protected const CHAINING_PASSTHROUGH = [
         'join',
         'joinSub',
@@ -45,21 +51,45 @@ class Builder
         'removeLimit',
     ];
 
+    /**
+     * @var array<string>
+     */
     protected const VALUED_PASSTHROUGH = [
         'asSql',
         'update',
         'delete',
     ];
 
+    /**
+     * @var Rovi\Query\Builder
+     */
     protected $builder;
+
+    /**
+     * @var string
+     */
     protected $modelClass;
 
+    /**
+     * Instantiate it.
+     * 
+     * @param string $modelClass
+     * @param Rovi\Connections\Connection
+     */
     public function __construct(string $modelClass, Connection $connection)
     {
         $this->builder = new QueryBuilder($connection);
         $this->modelClass = $modelClass;
     }
 
+    /**
+     * Forwards calls to the query builder.
+     * 
+     * @param string $method
+     * @param array $arguments
+     * @return $this
+     * @throws LogicException
+     */
     public function __call(string $method, array $arguments)
     {
         if (in_array($method, self::CHAINING_PASSTHROUGH)) {
@@ -77,6 +107,12 @@ class Builder
         throw new LogicException(sprintf('Method not implemented: \'%s\'', $method));
     }
 
+    /**
+     * Define the table to be queried.
+     * 
+     * @param string $table
+     * @return $this
+     */
     public function table(string $table)
     {
         $this->builder->table($table);
@@ -84,6 +120,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Retrieves results.
+     * 
+     * @return Collei\Collections\Collection
+     */
     public function get()
     {
         return $this->builder->get()->map(function($item) {
