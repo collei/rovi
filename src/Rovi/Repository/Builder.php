@@ -127,8 +127,10 @@ class Builder
      */
     public function get()
     {
-        return $this->builder->get()->map(function($item) {
-            return call_user_func_array([$this->modelClass, 'mapIntoInstance'], [$item]);
-        });
+        $model = $this->modelClass;
+        
+        $modelMapper = $model::getInstanceMapper();
+
+        return $this->builder->get()->map($modelMapper);
     }
 }

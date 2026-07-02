@@ -87,6 +87,9 @@ abstract class Model
     public function __debugInfo()
     {
         return [
+            'table' => static::TABLE,
+            'key' => static::KEY,
+            'connection' => static::CONNECTION,
             'retrieved' => $this->retrieved,
             'modified' => $this->modified,
         ];
@@ -332,13 +335,13 @@ abstract class Model
     /**
      * For use of Rovi\Repository\Builder.
      * 
-     * @param mixed $item
-     * @param int|string $key = null
-     * @return static
+     * @return Closure
      */
-    public static final function mapIntoInstance($item, $key = null)
+    public static final function getInstanceMapper()
     {
-        return (new static())->hydrate((array) $item);
+        return function($item, $key = null) {
+            return (new static)->hydrate((array) $item);
+        };
     }
 
     /**
