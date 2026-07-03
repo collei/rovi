@@ -140,6 +140,12 @@ abstract class Model
             ));
         }
 
+        if (static::KEY === $name) {
+            throw new RoviModelException(sprintf(
+                'Illegal assignment to primary key \'%s\' on table \'%s\'', $name, static::TABLE
+            ));
+        }
+
         $this->modified[$name] = $value;
     }
 
