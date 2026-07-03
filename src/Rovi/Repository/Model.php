@@ -89,6 +89,7 @@ abstract class Model
         return [
             'table' => static::TABLE,
             'key' => static::KEY,
+            'hydrated' => $this->hydrated ? 'TRUE' : 'FALSE',
             'connection' => static::CONNECTION,
             'retrieved' => $this->retrieved,
             'modified' => $this->modified,
