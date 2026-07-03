@@ -129,7 +129,7 @@ class Builder
     }
 
     /**
-     * Retrieves results.
+     * Retrieves results, if any.
      * 
      * @return Collei\Collections\Collection
      */
