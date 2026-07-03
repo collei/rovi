@@ -99,9 +99,7 @@ class Builder
         }
 
         if (in_array($method, self::VALUED_PASSTHROUGH)) {
-            $that = $this->builder->{$method}(...$arguments);
-
-            return $this;
+            return $this->builder->{$method}(...$arguments);
         }
 
         throw new LogicException(sprintf('Method not implemented: \'%s\'', $method));
