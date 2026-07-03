@@ -1450,7 +1450,11 @@ class Builder
             }
         }
 
-        if (is_array($values) && is_array(current($values))) {
+        if (is_array($values)) {
+            if (! is_array(current($values))) {
+                $values = array($values);
+            }
+
             $fields = null;
 
             foreach ($values as $k => $row) {
