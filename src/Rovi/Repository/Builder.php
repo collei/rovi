@@ -106,6 +106,16 @@ class Builder
     }
 
     /**
+     * Retrieves the inner builder.
+     * 
+     * @return Rovi\Query\Builder
+     */
+    public function getBuilder()
+    {
+        return $this->builder;
+    }
+
+    /**
      * Define the table to be queried.
      * 
      * @param string $table
