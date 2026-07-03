@@ -196,6 +196,46 @@ abstract class Model
     }
 
     /**
+     * Retrieves table name.
+     * 
+     * @return string
+     */
+    public final function getTable()
+    {
+        return static::TABLE ?? substr(static::class, strrpos(static::class, '\\') + 1);
+    }
+
+    /**
+     * Retrieves primary key name.
+     * 
+     * @return string
+     */
+    public final function getKeyName()
+    {
+        return static::KEY ?? 'id';
+    }
+
+    /**
+     * Retrieves db connection name.
+     * 
+     * @return string
+     */
+    public final function getConnectionName()
+    {
+        return static::CONNECTION;
+    }
+
+    /**
+     * Retrieves primary key value.
+     * 
+     * @return mixed
+     */
+    public final function getKey()
+    {
+        return $this->retrieved[$this->getKeyName()];
+    }
+
+    /**
      * Creates a new instance, optionally with fields.
      * 
      * @param array $fields = []
