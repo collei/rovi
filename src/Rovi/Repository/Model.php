@@ -321,34 +321,22 @@ abstract class Model
      * 
      * @return static
      */
-    public function find($id)
+    public static final function find($id)
     {
-        $result = $this->connection()->getBuilder()
+        $result = (new static)->connection()->getBuilder()
                     ->table(static::TABLE)
                     ->where(static::KEY, '=', $id)
                     ->get()->first();
 
         if (is_object($result)) {
-            return static::fromResult($result);
+            $result = (array) $result;
         }
 
         if (is_array($result)) {
-            return static::new($result);
+            return static::new()->hydrate($result);
         }
 
         return null;
-    }
-
-    /**
-     * For use of Rovi\Repository\Builder.
-     * 
-     * @return Closure
-     */
-    public static final function getInstanceMapper()
-    {
-        return function($item, $key = null) {
-            return (new static)->hydrate((array) $item);
-        };
     }
 
     /**
@@ -366,5 +354,100 @@ abstract class Model
         }
 
         return static::getQuery()->get();
+    }
+
+    /**
+     * Initiates a query on the model.
+     * 
+     * @param string|Closure|Expression $field
+     * @param mixed $operator = null
+     * @param mixed $value = null
+     * @return Rovi\Repository\Builder
+     */
+    public static final function where($field, $operator = null, $value = null)
+    {
+        return static::getQuery()->where($field, $operator, $value);
+    }
+
+    /**
+     * Performs data save in the database.
+     * 
+     * @return bool
+     */
+    public final function save()
+    {
+        return $this->hydrated
+                    ? $this->performUpdate()
+                    : $this->performInsert();
+    }
+
+    /**
+     * Performs data update in the database.
+     * 
+     * @return bool
+     */
+    private function performUpdate()
+    {
+        if (! $this->hydrated) {
+            return false;
+        }
+
+        $query = static::getQuery()->getBuilder()
+                    ->where(static::KEY, $this->retrieved[static::KEY])
+                    ->update($this->modified);
+
+        return $query !== false;
+    } 
+
+    /**
+     * Performs data insert in the database.
+     * 
+     * @return bool
+     */
+    private function performInsert()
+    {
+        list($fields, $key) = array($this->modified, array(static::KEY));
+
+        $query = static::getQuery()->getBuilder()->insert($fields, $key);
+
+        if (false !== $query) {
+            $id = $query->list[0][static::KEY] ?? $query->list[static::KEY] ?? $query->list[0];
+
+            $this->hydrated = true;
+
+            $this->modified[static::KEY] = $id;
+
+            $this->retrieved = $this->modified;
+        }
+    }
+
+    /**
+     * Performs record removal from the database.
+     * 
+     * @return bool
+     */
+    public final function delete()
+    {
+        if (! $this->hydrated) {
+            return false;
+        }
+
+        $query = static::getQuery()->getBuilder()
+                    ->where(static::KEY, $this->retrieved[static::KEY])
+                    ->delete();
+
+        return $query !== false;
+    }
+
+    /**
+     * For use of Rovi\Repository\Builder.
+     * 
+     * @return Closure
+     */
+    public static final function getInstanceMapper()
+    {
+        return function($item, $key = null) {
+            return (new static)->hydrate((array) $item);
+        };
     }
 }
