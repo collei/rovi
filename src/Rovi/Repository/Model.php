@@ -275,16 +275,16 @@ abstract class Model
     /**
      * Transforms field names to if enabled to do so.
      * 
-     * @param string $from
+     * @param string $to
      * @return string
      */
-    protected function transformFieldNamesTo($from)
+    protected function transformFieldNamesTo($to)
     {
         if (method_exists($this, 'toCamelCaseField')) {
-            $from = $this->toCamelCaseField($from);
+            $to = $this->toCamelCaseField($to);
         }
 
-        return $from;
+        return $to;
     }
 
     /**
