@@ -141,4 +141,24 @@ class Builder
 
         return $this->builder->get()->map($modelMapper);
     }
+
+    /**
+     * Retrieves all filtered results, if any.
+     * 
+     * @return Collei\Collections\Collection
+     */
+    public function all()
+    {
+        return $this->get();
+    }
+
+    /**
+     * Retrieves the first of the filtered results, if any.
+     * 
+     * @return Rovi\Repository\Model|null
+     */
+    public function first()
+    {
+        return $this->get()->first();
+    }
 }
