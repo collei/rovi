@@ -74,7 +74,7 @@ abstract class Relation
      * 
      * @return Rovi\Connections\Connection
      */
-    public final function connection()
+    protected final function connection()
     {
         return $this->connection;
     }
@@ -84,7 +84,7 @@ abstract class Relation
      * 
      * @return Rovi\Repository\Model
      */
-    public final function left()
+    protected final function left()
     {
         return $this->left;
     }
