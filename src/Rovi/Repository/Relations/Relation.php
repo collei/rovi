@@ -111,7 +111,7 @@ abstract class Relation
      * 
      * @return string
      */
-    public final function leftTable()
+    protected final function leftTable()
     {
         return $this->left->getTable();
     }
@@ -136,7 +136,7 @@ abstract class Relation
      * 
      * @return string
      */
-    public final function rightTable()
+    protected final function rightTable()
     {
         $class = $this->rightClass;
 
