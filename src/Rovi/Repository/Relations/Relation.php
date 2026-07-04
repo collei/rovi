@@ -20,17 +20,17 @@ abstract class Relation
     /**
      * @var string
      */
-    private $rightTable;
+    private $rightClass;
 
     /**
      * @var string
      */
-    private $leftKey;
+    private $foreignKey;
 
     /**
      * @var string
      */
-    private $rightKey;
+    private $localKey;
 
     /**
      * @var Rovi\Connections\Connection
@@ -42,18 +42,18 @@ abstract class Relation
      * 
      * @param Rovi\Repository\Model $left
      * @param string $right
-     * @param string|null $leftKey
-     * @param string|null $rightKey
+     * @param string|null $foreignKey
+     * @param string|null $localKey
      * @throws InvalidArgumentException when the first or second arguments aren't classnames extending Model.
      * @throws LogicException when both models do not use the same database connection.
      */
-    public function __construct(Model $left, string $right, ?string $leftKey = null, ?string $rightKey = null)
+    public function __construct(Model $left, string $rightClass, ?string $foreignKey = null, ?string $localKey = null)
     {
-        if (! is_subclass_of($right, Model::class, true)) {
+        if (! is_subclass_of($rightClass, Model::class, true)) {
             throw new InvalidArgumentException('Both first and second arguments must be subclasses of Model');
         }
 
-        $right = (new $right);
+        $right = (new $rightClass);
 
         if ($left->getConnectionName() !== $right->getConnectionName()) {
             throw new LogicException('Both Model subclasses must use the same database connection');
@@ -63,10 +63,10 @@ abstract class Relation
 
         $this->left = $left;
         
-        $this->rightTable = $right->getTable();
+        $this->rightClass = $rightClass;
 
-        $this->leftKey = $leftKey ?: $left->getKeyName();
-        $this->rightKey = $rightKey ?: $right->getKeyName();
+        $this->foreignKey = $foreignKey ?: $right->getKeyName();
+        $this->localKey = $localKey ?: $left->getKeyName();
     }
 
     /**
