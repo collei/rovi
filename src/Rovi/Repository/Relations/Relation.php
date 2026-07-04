@@ -92,10 +92,17 @@ abstract class Relation
     /**
      * Retrieves the left model class name.
      * 
+     * @param bool $shortName = false
      * @return string
      */
-    public final function leftClass()
+    protected final function leftClass(bool $shortName = false)
     {
+        if ($shortName) {
+            $class = get_class($this->left);
+
+            return substr($class, strrpos($class, '\\') + 1);
+        }
+
         return get_class($this->left);
     }
 
@@ -112,11 +119,28 @@ abstract class Relation
     /**
      * Retrieves the right table name.
      * 
+     * @param bool $shortName = false
+     * @return string
+     */
+    protected final function rightClass(bool $shortName = false)
+    {
+        if ($shortName) {
+            return substr($this->rightClass, strrpos($this->rightClass, '\\') + 1);
+        }
+
+        return $this->rightClass;
+    }
+
+    /**
+     * Retrieves the right table name.
+     * 
      * @return string
      */
     public final function rightTable()
     {
-        return $this->rightTable;
+        $class = $this->rightClass;
+
+        return (new $class)->getTable();
     }
 
     /**
@@ -125,13 +149,13 @@ abstract class Relation
      * @param bool $qualified = false
      * @return string
      */
-    public final function leftKey(bool $qualified = false)
+    protected final function foreignKey(bool $qualified = false)
     {
         if ($qualified) {
-            return $this->leftTable() . '.' . $this->leftKey;
+            return $this->rightTable() . '.' . $this->foreignKey;
         }
 
-        return $this->leftKey;
+        return $this->foreignKey;
     }
 
     /**
