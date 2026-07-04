@@ -13,9 +13,9 @@ use Collei\Collections\Collection;
 abstract class Relation
 {
     /**
-     * @var string
+     * @var Rovi\Repository\Model
      */
-    protected $leftTable;
+    private $left;
 
     /**
      * @var string
@@ -40,14 +40,14 @@ abstract class Relation
     /**
      * Instantiator.
      * 
-     * @param string $left
+     * @param Rovi\Repository\Model $left
      * @param string $right
      * @param string|null $leftKey
      * @param string|null $rightKey
      * @throws InvalidArgumentException when the first or second arguments aren't classnames extending Model.
      * @throws LogicException when both models do not use the same database connection.
      */
-    public function __construct(string $left, string $right, ?string $leftKey = null, ?string $rightKey = null)
+    public function __construct(Model $left, string $right, ?string $leftKey = null, ?string $rightKey = null)
     {
         if (! is_subclass_of($left, Model::class, true) || ! is_subclass_of($right, Model::class, true)) {
             throw new InvalidArgumentException('Both first and second arguments must be subclasses of Model');
@@ -61,7 +61,9 @@ abstract class Relation
 
         $this->connection = $left->connection();
 
-        list($this->leftTable, $this->rightTable) = array($left->getTable(), $right->getTable());
+        $this->left = $left;
+        
+        $this->rightTable = $right->getTable();
 
         $this->leftKey = $leftKey ?: $left->getKeyName();
         $this->rightKey = $rightKey ?: $right->getKeyName();
@@ -78,18 +80,58 @@ abstract class Relation
     }
 
     /**
+     * Retrieves the left model instance.
+     * 
+     * @return Rovi\Repository\Model
+     */
+    public final function left()
+    {
+        return $this->left;
+    }
+
+    /**
+     * Retrieves the left model class name.
+     * 
+     * @return string
+     */
+    public final function leftClass()
+    {
+        return get_class($this->left);
+    }
+
+    /**
+     * Retrieves the left table name.
+     * 
+     * @return string
+     */
+    public final function leftTable()
+    {
+        return $this->left->getTable();
+    }
+
+    /**
+     * Retrieves the right table name.
+     * 
+     * @return string
+     */
+    public final function rightTable()
+    {
+        return $this->rightTable;
+    }
+
+    /**
      * Retrieves the left table key.
      * 
      * @param bool $qualified = false
      * @return string
      */
-    public final function getLeftKey(bool $qualified = false)
+    public final function leftKey(bool $qualified = false)
     {
         if ($qualified) {
-            return $this->leftTable . '.' . $this->getLeftKey;
+            return $this->leftTable() . '.' . $this->leftKey;
         }
 
-        return $this->getLeftKey;
+        return $this->leftKey;
     }
 
     /**
@@ -98,13 +140,13 @@ abstract class Relation
      * @param bool $qualified = false
      * @return string
      */
-    public final function getRightKey(bool $qualified = false)
+    public final function rightKey(bool $qualified = false)
     {
         if ($qualified) {
-            return $this->rightTable . '.' . $this->getRightKey;
+            return $this->rightTable() . '.' . $this->rightKey;
         }
 
-        return $this->getRightKey;
+        return $this->rightKey;
     }
 
     /**
