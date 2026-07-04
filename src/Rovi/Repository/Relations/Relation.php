@@ -20,22 +20,22 @@ abstract class Relation
     /**
      * @var string
      */
-    protected $rightTable;
+    private $rightTable;
 
     /**
      * @var string
      */
-    protected $leftKey;
+    private $leftKey;
 
     /**
      * @var string
      */
-    protected $rightKey;
+    private $rightKey;
 
     /**
      * @var Rovi\Connections\Connection
      */
-    protected $connection;
+    private $connection;
 
     /**
      * Instantiator.
@@ -49,11 +49,11 @@ abstract class Relation
      */
     public function __construct(Model $left, string $right, ?string $leftKey = null, ?string $rightKey = null)
     {
-        if (! is_subclass_of($left, Model::class, true) || ! is_subclass_of($right, Model::class, true)) {
+        if (! is_subclass_of($right, Model::class, true)) {
             throw new InvalidArgumentException('Both first and second arguments must be subclasses of Model');
         }
 
-        list($left, $right) = array((new $left), (new $right));
+        $right = (new $right);
 
         if ($left->getConnectionName() !== $right->getConnectionName()) {
             throw new LogicException('Both Model subclasses must use the same database connection');
