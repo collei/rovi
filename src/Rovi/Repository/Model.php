@@ -98,6 +98,11 @@ abstract class Model
     private $modified = [];
 
     /**
+     * @var array
+     */
+    protected $relationships = [];
+
+    /**
      * Builds a new instance.
      * 
      * @param array $fields = []
@@ -541,7 +546,13 @@ abstract class Model
      */
     protected final function belongsTo(string $other, ?string $foreignKey = null, ?string $localKey = null)
     {
-        return new BelongsTo($this, $other, $foreignKey, $localKey);
+        $relation = guessCallerMethodName();
+
+        if (! empty($this->relationships[$relation])) {
+            return $this->relationships[$relation];
+        }
+
+        return $this->relationships[$relation] = new BelongsTo($this, $other, $foreignKey, $localKey);
     }
 
     /**
@@ -554,7 +565,13 @@ abstract class Model
      */
     protected final function hasMany(string $other, ?string $foreignKey = null, ?string $localKey = null)
     {
-        return new HasMany($this, $other, $foreignKey, $localKey);
+        $relation = guessCallerMethodName();
+
+        if (! empty($this->relationships[$relation])) {
+            return $this->relationships[$relation];
+        }
+
+        return $this->relationships[$relation] = new HasMany($this, $other, $foreignKey, $localKey);
     }
 
     /**
@@ -568,6 +585,24 @@ abstract class Model
      */
     protected final function belongsToMany(string $other, ?string $intermediate = null, ?string $leftKey = null, ?string $rightKey = null)
     {
-        return new BelongsToMany($this, $other, $intermediate, $leftKey, $rightKey);
+        $relation = guessCallerMethodName();
+
+        if (! empty($this->relationships[$relation])) {
+            return $this->relationships[$relation];
+        }
+
+        return $this->relationships[$relation] = new BelongsToMany($this, $other, $intermediate, $leftKey, $rightKey);
+    }
+
+    /**
+     * Returns the caller method name.
+     * 
+     * @return string
+     */
+    private function guessCallerMethodName()
+    {
+        list($a, $b, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+
+        return $caller['function'];
     }
 }
