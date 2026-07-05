@@ -185,5 +185,22 @@ abstract class Relation
      * 
      * @return Rovi\Repository\Model|Collei\Collections\Collection|null
      */
-    public abstract function get();
+    public function get()
+    {
+        $result = $this->query()->get();
+
+        $class = $this->rightClass();
+
+        $mapper = $class::getInstanceMapper();
+
+        if ($this instanceof BelongsTo) {
+            if ($first = $result->first()) {
+                return $mapper($first);
+            }
+
+            return null;
+        }
+
+        return $result->map($mapper);
+    }
 }
