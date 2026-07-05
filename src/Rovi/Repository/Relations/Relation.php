@@ -164,13 +164,13 @@ abstract class Relation
      * @param bool $qualified = false
      * @return string
      */
-    public final function rightKey(bool $qualified = false)
+    protected final function localKey(bool $qualified = false)
     {
         if ($qualified) {
-            return $this->rightTable() . '.' . $this->rightKey;
+            return $this->leftTable() . '.' . $this->localKey;
         }
 
-        return $this->rightKey;
+        return $this->localKey;
     }
 
     /**
