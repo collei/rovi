@@ -48,6 +48,36 @@ abstract class Model
     protected const CONNECTION = 'db';
 
     /**
+     * @var array
+     */
+    private const INNER_METHODS = [
+        'getTable',
+        'getKeyName',
+        'getConnectionName',
+        'getKey',
+        'new',
+        'fromResult',
+        'getQuery',
+        'connection',
+        'toJson',
+        'transformFieldNamesFrom',
+        'transformFieldNamesTo',
+        'hydrate',
+        'toArray',
+        'find',
+        'all',
+        'where',
+        'save',
+        'performUpdate',
+        'performInsert',
+        'delete',
+        'getInstanceMapper',
+        'BelongsTo',
+        'HasMany',
+        'BelongsToMany',
+    ];
+
+    /**
      * @var \Rovi\Connections\Connection
      */
     private $connection = null;
@@ -108,6 +138,12 @@ abstract class Model
      */
     public final function __get(string $name)
     {
+        if (method_exists($this, $name) && ! in_array($name, self::INNER_METHODS, true)) {
+            $result = $this->{$name}();
+
+            return ($result instanceof Relation) ? $result->get() : $result;
+        }
+    
         $name = $this->transformFieldNamesFrom($name);
 
         if (array_key_exists($name, $this->modified)) {
