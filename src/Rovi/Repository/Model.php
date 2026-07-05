@@ -530,4 +530,44 @@ abstract class Model
             return (new static)->hydrate((array) $item);
         };
     }
+
+    /**
+     * Builds a belongs-to relationship.
+     * 
+     * @param string $other
+     * @param string $foreignKey = null
+     * @param string $localKey = null
+     * @return Rovi\Repository\Relations\BelongsTo
+     */
+    protected final function belongsTo(string $other, ?string $foreignKey = null, ?string $localKey = null)
+    {
+        return new BelongsTo($this, $other, $foreignKey, $localKey);
+    }
+
+    /**
+     * Builds a has-many relationship.
+     * 
+     * @param string $other
+     * @param string $foreignKey = null
+     * @param string $localKey = null
+     * @return Rovi\Repository\Relations\HasMany
+     */
+    protected final function hasMany(string $other, ?string $foreignKey = null, ?string $localKey = null)
+    {
+        return new HasMany($this, $other, $foreignKey, $localKey);
+    }
+
+    /**
+     * Builds a belongs-to-many relationship.
+     * 
+     * @param string $other
+     * @param string $intermediate = null
+     * @param string $leftKey = null
+     * @param string $rightKey = null
+     * @return Rovi\Repository\Relations\BelongsToMany
+     */
+    protected final function belongsToMany(string $other, ?string $intermediate = null, ?string $leftKey = null, ?string $rightKey = null)
+    {
+        return new BelongsToMany($this, $other, $intermediate, $leftKey, $rightKey);
+    }
 }
