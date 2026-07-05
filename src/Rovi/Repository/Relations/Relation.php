@@ -201,18 +201,6 @@ abstract class Relation
     {
         $result = $this->query()->get();
 
-        $class = $this->rightClass();
-
-        $mapper = $class::getInstanceMapper();
-
-        if ($this instanceof BelongsTo) {
-            if ($first = $result->first()) {
-                return $mapper($first);
-            }
-
-            return null;
-        }
-
-        return $result->map($mapper);
+        return ($this instanceof BelongsTo) ? $result->first() : $result;
     }
 }
