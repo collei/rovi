@@ -143,10 +143,10 @@ abstract class Model
      */
     public final function __get(string $name)
     {
-        if (method_exists($this, $name) && ! in_array($name, self::INNER_METHODS, true)) {
+        if (method_exists($this, $name) && (! in_array($name, self::INNER_METHODS, true))) {
             $result = $this->{$name}();
 
-            return ($result instanceof Relation) ? $result->get() : $result;
+            return ($result instanceof Relation) ? @$result->get() : $result;
         }
     
         $name = $this->transformFieldNamesFrom($name);
@@ -159,11 +159,7 @@ abstract class Model
             return $this->retrieved[$name];
         }
 
-        if (method_exists($this, $name)) {
-            return $this->$name();
-        }
-
-        throw new RoviModelException(sprintf(
+        throw new RoviModelException($this, sprintf(
             'Not found property \'%s\' on table \'%s\'', $name, static::TABLE
         ));
     }
@@ -202,9 +198,13 @@ abstract class Model
      */
     public final function __isset(string $name)
     {
-        $name = $this->transformFieldNamesFrom($name);
+        if (method_exists($this, $name) && ! in_array($name, self::INNER_METHODS, true)) {
+            return true;
+        }
         
-        return (! $this->recent) && array_key_exists($name, $this->retrieved);
+        $name = $this->transformFieldNamesFrom($name);
+
+        return (! $this->hydrated) && array_key_exists($name, $this->retrieved);
     }
 
     /**
