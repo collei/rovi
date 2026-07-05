@@ -546,7 +546,7 @@ abstract class Model
      */
     protected final function belongsTo(string $other, ?string $foreignKey = null, ?string $localKey = null)
     {
-        $relation = guessCallerMethodName();
+        $relation = $this->guessCallerMethodName();
 
         if (! empty($this->relationships[$relation])) {
             return $this->relationships[$relation];
@@ -565,7 +565,7 @@ abstract class Model
      */
     protected final function hasMany(string $other, ?string $foreignKey = null, ?string $localKey = null)
     {
-        $relation = guessCallerMethodName();
+        $relation = $this->guessCallerMethodName();
 
         if (! empty($this->relationships[$relation])) {
             return $this->relationships[$relation];
@@ -585,7 +585,7 @@ abstract class Model
      */
     protected final function belongsToMany(string $other, ?string $intermediate = null, ?string $leftKey = null, ?string $rightKey = null)
     {
-        $relation = guessCallerMethodName();
+        $relation = $this->guessCallerMethodName();
 
         if (! empty($this->relationships[$relation])) {
             return $this->relationships[$relation];
