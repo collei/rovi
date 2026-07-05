@@ -16,6 +16,7 @@ class Builder
      * @var array<string>
      */
     protected const CHAINING_PASSTHROUGH = [
+        'select',
         'join',
         'joinSub',
         'innerJoin',
