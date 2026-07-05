@@ -2,6 +2,10 @@
 namespace Rovi\Repository;
 
 use Rovi\Connections\Connector;
+use Rovi\Repository\Relations\Relation;
+use Rovi\Repository\Relations\BelongsTo;
+use Rovi\Repository\Relations\HasMany;
+use Rovi\Repository\Relations\BelongsToMany;
 
 /**
  * Model base class. 
