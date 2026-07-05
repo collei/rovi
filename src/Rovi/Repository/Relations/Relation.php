@@ -4,6 +4,7 @@ namespace Rovi\Repository\Relations;
 use InvalidArgumentException;
 use LogicException;
 use Rovi\Repository\Model;
+use Rovi\Repository\Builder;
 use Rovi\Connections\Connection;
 use Collei\Collections\Collection;
 
@@ -171,6 +172,17 @@ abstract class Relation
         }
 
         return $this->localKey;
+    }
+
+    /**
+     * Retrieves the builder for use of query() implementations.
+     * 
+     * @return Rovi\Repository\Builder
+     */
+    protected final function getBuilder()
+    {
+        return (new Builder($this->rightClass(), $this->connection()))
+                    ->table($this->rightTable());
     }
 
     /**

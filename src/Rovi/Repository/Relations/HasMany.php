@@ -20,8 +20,7 @@ class HasMany extends Relation
      */
     public function query()
     {
-        return $this->connection()->getBuilder()
-                    ->table($this->rightTable())
+        return $this->getBuilder()
                     ->where($this->foreignKey(true), '=', $this->left()->getKey());
     }
 }
