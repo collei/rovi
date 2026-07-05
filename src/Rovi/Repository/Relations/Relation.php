@@ -174,6 +174,13 @@ abstract class Relation
     }
 
     /**
+     * Retrieves the relation query.
+     * 
+     * @return Rovi\Query\Builder
+     */
+    public abstract function query();
+
+    /**
      * Retrieves the relation results.
      * 
      * @return Rovi\Repository\Model|Collei\Collections\Collection|null
