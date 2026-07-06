@@ -370,7 +370,7 @@ abstract class Grammar
                 
             $order = ($order === 'DESC') ? 'DESC' : 'ASC';
 
-            $items[] = $order . ' ' . $field;
+            $items[] = $field . ' ' . $order;
         }
 
         return sprintf('ORDER BY %s', implode(', ', $items));        
