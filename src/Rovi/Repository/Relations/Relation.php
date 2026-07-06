@@ -4,7 +4,8 @@ namespace Rovi\Repository\Relations;
 use InvalidArgumentException;
 use LogicException;
 use Rovi\Repository\Model;
-use Rovi\Repository\Builder;
+use Rovi\Repository\Traits\BuilderTrait;
+use Rovi\Query\Builder;
 use Rovi\Connections\Connection;
 use Collei\Collections\Collection;
 
@@ -13,6 +14,8 @@ use Collei\Collections\Collection;
  */
 abstract class Relation
 {
+    use BuilderTrait;
+
     /**
      * @var Rovi\Repository\Model
      */
@@ -61,6 +64,9 @@ abstract class Relation
         }
 
         $this->connection = $left->connection();
+
+        $this->builder = new Builder($this->connection);
+        $this->modelClass = $rightClass;
 
         $this->left = $left;
         
@@ -175,17 +181,6 @@ abstract class Relation
     }
 
     /**
-     * Retrieves the builder for use of query() implementations.
-     * 
-     * @return Rovi\Repository\Builder
-     */
-    protected final function getBuilder()
-    {
-        return (new Builder($this->rightClass(), $this->connection()))
-                    ->table($this->rightTable());
-    }
-
-    /**
      * Retrieves the relation query.
      * 
      * @return Rovi\Query\Builder
@@ -199,8 +194,14 @@ abstract class Relation
      */
     public function get()
     {
-        $result = $this->query()->get();
+        $model = $this->modelClass;
+        
+        $mapper = $model::getInstanceMapper();
 
-        return ($this instanceof BelongsTo) ? $result->first() : $result;
+        $result = $this->query()->builder->get();
+
+        return ($this instanceof BelongsTo)
+            ? $mapper($result->first()) 
+            : ($result ? $result->map($mapper) : new Collection());
     }
 }
