@@ -155,13 +155,11 @@ abstract class Model
             return $this->modified[$name];
         }
 
-        if ($this->hydrated && array_key_exists($name, $this->retrieved)) {
+        if (array_key_exists($name, $this->retrieved)) {
             return $this->retrieved[$name];
         }
 
-        throw new RoviModelException($this, sprintf(
-            'Not found property \'%s\' on table \'%s\'', $name, static::TABLE
-        ));
+        return null;
     }
 
     /**
