@@ -90,7 +90,7 @@ class BelongsToMany extends Relation
      */
     public function query()
     {
-        return $this->getBuilder()
+        return $this->table($this->rightTable())
                     ->join($this->joiner(), $this->foreignKey(true), '=', $this->joinerRight())
                     ->join($this->leftTable(), $this->localKey(true), '=', $this->joinerLeft())
                     ->select(Builder::raw($this->rightTable().'.*'))
