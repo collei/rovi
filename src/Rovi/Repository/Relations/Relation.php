@@ -17,6 +17,11 @@ abstract class Relation
     use BuilderTrait;
 
     /**
+     * @var Rovi\Connections\Connection
+     */
+    private $connection;
+
+    /**
      * @var Rovi\Repository\Model
      */
     private $left;
@@ -29,29 +34,22 @@ abstract class Relation
     /**
      * @var string
      */
-    private $foreignKey;
+    protected $foreignKey;
 
     /**
      * @var string
      */
-    private $localKey;
-
-    /**
-     * @var Rovi\Connections\Connection
-     */
-    private $connection;
+    protected $localKey;
 
     /**
      * Instantiator.
      * 
      * @param Rovi\Repository\Model $left
      * @param string $right
-     * @param string|null $foreignKey
-     * @param string|null $localKey
      * @throws InvalidArgumentException when the first or second arguments aren't classnames extending Model.
      * @throws LogicException when both models do not use the same database connection.
      */
-    public function __construct(Model $left, string $rightClass, ?string $foreignKey = null, ?string $localKey = null)
+    public function __construct(Model $left, string $rightClass)
     {
         if (! is_subclass_of($rightClass, Model::class, true)) {
             throw new InvalidArgumentException('Both first and second arguments must be subclasses of Model');
@@ -66,14 +64,10 @@ abstract class Relation
         $this->connection = $left->connection();
 
         $this->builder = new Builder($this->connection);
-        $this->modelClass = $rightClass;
 
-        $this->left = $left;
-        
-        $this->rightClass = $rightClass;
+        list($this->left, $this->rightClass) = array($left, $this->modelClass = $rightClass);
 
-        $this->foreignKey = $foreignKey ?: $right->getKeyName();
-        $this->localKey = $localKey ?: $left->getKeyName();
+        list($this->foreignKey, $this->localKey) = array($right->getKeyName(), $left->getKeyName());
     }
 
     /**
@@ -100,14 +94,17 @@ abstract class Relation
      * Retrieves the left model class name.
      * 
      * @param bool $shortName = false
+     * @param bool $lowercased = false
      * @return string
      */
-    protected final function leftClass(bool $shortName = false)
+    protected final function leftClass(bool $shortName = false, bool $lowercased = false)
     {
         if ($shortName) {
             $class = get_class($this->left);
 
-            return substr($class, strrpos($class, '\\') + 1);
+            $shortClass = substr($class, strrpos($class, '\\'));
+
+            return $lowercased ? strtolower($shortClass) : $shortClass;
         }
 
         return get_class($this->left);
@@ -127,12 +124,15 @@ abstract class Relation
      * Retrieves the right table name.
      * 
      * @param bool $shortName = false
+     * @param bool $lowercased = false
      * @return string
      */
-    protected final function rightClass(bool $shortName = false)
+    protected final function rightClass(bool $shortName = false, bool $lowercased = false)
     {
         if ($shortName) {
-            return substr($this->rightClass, strrpos($this->rightClass, '\\') + 1);
+            $shortClass = substr($this->rightClass, strrpos($this->rightClass, '\\'));
+
+            return $lowercased ? strtolower($shortClass) : $shortClass;
         }
 
         return $this->rightClass;
@@ -156,7 +156,7 @@ abstract class Relation
      * @param bool $qualified = false
      * @return string
      */
-    protected final function foreignKey(bool $qualified = false)
+    protected function foreignKey(bool $qualified = false)
     {
         if ($qualified) {
             return $this->rightTable() . '.' . $this->foreignKey;
@@ -171,7 +171,7 @@ abstract class Relation
      * @param bool $qualified = false
      * @return string
      */
-    protected final function localKey(bool $qualified = false)
+    protected function localKey(bool $qualified = false)
     {
         if ($qualified) {
             return $this->leftTable() . '.' . $this->localKey;
@@ -198,7 +198,7 @@ abstract class Relation
         
         $mapper = $model::getInstanceMapper();
 
-        $result = $this->query()->builder->get();
+        $result = $this->query()->getBuilder()->get();
 
         return ($this instanceof BelongsTo)
             ? $mapper($result->first()) 
