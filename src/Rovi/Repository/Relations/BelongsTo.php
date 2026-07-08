@@ -32,6 +32,10 @@ class BelongsTo extends Relation
     {
         parent::__construct($left, $rightClass);
 
+        if (! empty($foreignKey)) {
+            $this->foreignKey = $foreignKey;
+        }
+        
         $this->localKey = $localKey ?: $this->rightClass(true, true).'_id';
     }
 
