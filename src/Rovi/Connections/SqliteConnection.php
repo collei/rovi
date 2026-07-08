@@ -3,6 +3,9 @@ namespace Rovi\Connections;
 
 use Rovi\Query\Grammars\SqliteGrammar;
 
+/**
+ * Sqlite connection.
+ */
 class SqliteConnection extends Connection
 {
 	/**
@@ -18,6 +21,11 @@ class SqliteConnection extends Connection
         parent::__construct('sqlite', $dsn, $database, $username, $password);
     }
 
+	/**
+	 * Custom initialization.
+	 * 
+	 * @return void
+	 */
     protected function initialize()
     {
         $this->grammar = new SqliteGrammar();

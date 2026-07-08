@@ -4,18 +4,39 @@ namespace Rovi\Query\Grammars;
 use InvalidArgumentException;
 use Rovi\Query\Expressions\Expression;
 
+/**
+ * Generic SQL Grammar 
+ */
 abstract class Grammar
 {
+    /**
+     * @var int
+     */
     protected const MAX_INT_32 = 2147483647;
 
+    /**
+     * @var int
+     */
     protected const MAX_INT_64 = 9223372036854775807;
 
+    /**
+     * @var string
+     */
     protected const REGEX_SQL_IDENTIFIER = '/^\s*(?<identifier>(?>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\])(?>\s*\.\s*(?>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\])){0,2})(?>\s+as\s+(?<alias>[A-Za-z_]\w*|´[^´]+´|\[[^\]]+\]))?\s*$/i';
 
+    /**
+     * @var string
+     */
     protected const REGEX_JOIN_TYPE = '/\s*(full|left|right|)\s*(inner|outer|)?\s*(join)\s*/i';
 
+    /**
+     * @var string
+     */
     protected const REGEX_SQL_BINDING_VARIABLE = '/\s*:[A-Za-z]\w*\s*/i';
 
+    /**
+     * @var array
+     */
     protected const TYPES = [
         'int' => ['integer','int','tinyint','smallint','mediumint','bigint'],
         'float' => ['float','double','decimal','numeric'],
@@ -24,6 +45,9 @@ abstract class Grammar
         DateTime::class => ['date','datetime','timestamp','year'],
     ];
 
+    /**
+     * @var array
+     */
     protected const DB_TYPES = [
         'int' => 'int',
         'integer' => 'integer',
@@ -49,15 +73,24 @@ abstract class Grammar
         'year' => 'year',
     ];
 
+    /**
+     * @var array
+     */
     protected const DB_DECIMAL_TYPES = [
         'decimal' => 'decimal(%s,%s)',
     ];
 
+    /**
+     * @var array
+     */
     protected const DB_STRING_TYPES = [
         'varchar' => 'varchar(%s)',
         'char' => 'char(%s)',
     ];
     
+    /**
+     * @var array
+     */
     protected const DB_TYPES_DEFAULTS = [
         'int' => 0,
         'integer' => 0,
@@ -82,6 +115,9 @@ abstract class Grammar
         'year' => 'YEAR(CURDATE())',
     ];
 
+    /**
+     * @var array
+     */
     protected const SQL_OPERATORS = [
         '=' => '=',
         '>' => '>',
@@ -100,24 +136,56 @@ abstract class Grammar
         'not exists' => 'not exists',
     ];
 
+    /**
+     * @var string|null
+     */
     protected $dbEngineVersion = null;
 
+    /**
+     * @var int
+     */
     protected $defaultStringSize = 50;
+
+    /**
+     * @var int
+     */
     protected $defaultDecimalSize = 18;
+
+    /**
+     * @var int
+     */
     protected $defaultDecimalPrecision = 2;
 
+    /**
+     * Custom grammar initialization.
+     * 
+     * @return void
+     */
     abstract protected function init();
 
+    /**
+     * Grammar instantiator.
+     */
     public final function __construct()
     {
         $this->init();
     }
 
+    /**
+     * DB vendor engine version.
+     * 
+     * @return string|null
+     */
     public final function engineVersion()
     {
         return $this->dbEngineVersion;
     }
 
+    /**
+     * Comparator for the DB vendor engine versions.
+     * 
+     * @return void
+     */
     public final function engineVersionCompare(string $queried)
     {
         if (empty($this->dbEngineVersion) || empty($queried)) {
@@ -138,6 +206,11 @@ abstract class Grammar
         return strcasecmp($set, $queried);
     }
 
+    /**
+     * For use of PHP debugging functions.
+     * 
+     * @return array
+     */
     public function __debugInfo()
     {
         return [
