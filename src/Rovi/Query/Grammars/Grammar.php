@@ -220,6 +220,12 @@ abstract class Grammar
         ];
     }
 
+    /**
+     * Checks whether an operator is valid.
+     * 
+     * @param mixed $operator
+     * @return bool
+     */
     public function isValidOperator($operator)
     {
         if (in_array($operator, self::SQL_OPERATORS, true)) {
@@ -233,22 +239,47 @@ abstract class Grammar
         return array_key_exists(strtolower($operator), self::SQL_OPERATORS);
     }
 
+    /**
+     * Set the string default size.
+     * 
+     * @param int $size
+     * @return void
+     */
     public function setDefaultStringSize(int $size)
     {
         $this->defaultStringSize = $size;
     }
 
+    /**
+     * Set the decimal default size and precision.
+     * 
+     * @param int $size
+     * @param int $precision
+     * @return void
+     */
     public function setDefaultDecimalSizeAndPrecision(int $size, int $precision)
     {
         $this->defaultDecimalSize = $size;
         $this->defaultDecimalPrecision = $precision;
     }
 
+    /**
+     * Validade sql identifiers.
+     * 
+     * @param string $sqlIdentifier
+     * @return bool
+     */
     public function validateSqlIdentifier(string $sqlIdentifier)
     {
         return 1 === preg_match(self::REGEX_SQL_IDENTIFIER, $sqlIdentifier);
     }
 
+    /**
+     * Parses aliased SQL identifiers.
+     * 
+     * @param string $sqlIdentifier
+     * @return array|null
+     */
     public function parseAliasedSqlIdentifier(string $sqlIdentifier)
     {
         if (1 === preg_match(self::REGEX_SQL_IDENTIFIER, $sqlIdentifier, $results)) {
@@ -258,6 +289,13 @@ abstract class Grammar
         return null;
     }
 
+    /**
+     * Compiles create table header.
+     * 
+     * @param string $name
+     * @param array $compiledFields = []
+     * @return string
+     */
     public function compileCreateTable(string $name, array $compiledFields = [])
     {
         return sprintf(
@@ -267,6 +305,14 @@ abstract class Grammar
         );
     }
 
+    /**
+     * Compiles table name.
+     * 
+     * @param string $table
+     * @param string $schema = null
+     * @param string $database = null
+     * @return string
+     */
     public function compileTableName(string $table, ?string $schema = null, ?string $database = null)
     {
         if (! empty($schema)) {
@@ -280,6 +326,14 @@ abstract class Grammar
             : sprintf('[%s]', $table);
     }
 
+    /**
+     * Compiles table primary key column.
+     * 
+     * @param string $name
+     * @param string $type
+     * @param bool $isIdentity = true
+     * @return string
+     */
     public function compileColumnPrimaryKey(string $name, string $type, bool $isIdentity = true)
     {
         return sprintf(
@@ -291,6 +345,15 @@ abstract class Grammar
         );
     }
 
+    /**
+     * Compiles table column.
+     * 
+     * @param string $name
+     * @param string $type
+     * @param bool $isNullable = true
+     * @param mixed $default = null
+     * @return string
+     */
     public function compileColumn(string $name, string $type, bool $isNullable = true, $default = null)
     {
         return sprintf(
@@ -302,6 +365,14 @@ abstract class Grammar
         );
     }
 
+    /**
+     * Compiles table column type.
+     * 
+     * @param string $type
+     * @param int $size = null
+     * @param int $precision = null
+     * @return string
+     */
     public function compileType(string $type, ?int $size = null, ?int $precision = null)
     {
         if (array_key_exists($type, static::TYPES)) {
@@ -355,6 +426,14 @@ abstract class Grammar
         throw new InvalidArgumentException("Invalid database type: {$type}");
     }
 
+    /**
+     * Compiles aliasing.
+     * 
+     * @param string $target
+     * @param string $alias = null
+     * @param bool $nesting = false
+     * @return string
+     */
     public function compileAlias(string $target, ?string $alias = null, bool $nesting = false)
     {
         return empty($alias)
@@ -364,6 +443,16 @@ abstract class Grammar
                 : sprintf('%s AS %s', trim($target), trim($alias)));
     }
 
+    /**
+     * Compiles table joins.
+     * 
+     * @param string $type
+     * @param string $joinTable
+     * @param string $alias = null
+     * @param array $conditions = []
+     * @param bool $nesting = false
+     * @return string
+     */
     public function compileJoin(string $type, string $joinTable, ?string $alias = null, array $conditions = [], bool $nesting = false)
     {
         if (empty($conditions)) {
@@ -378,6 +467,14 @@ abstract class Grammar
         );
     }
 
+    /**
+     * Compiles table update set clause.
+     * 
+     * @param string $field
+     * @param string $value
+     * @param bool $nesting = false
+     * @return string
+     */
     public function compileSet(string $field, string $value, bool $nesting = false)
     {
         if ($nesting) {
@@ -388,9 +485,11 @@ abstract class Grammar
     }
 
     /**
-     * clauses
+     * Compiles table select clauses.
+     * 
+     * @param array $fields = null
+     * @return string
      */
-
     public function compileSelectClause(?array $fields = null)
     {
         if (empty($fields)) {
@@ -711,17 +810,46 @@ abstract class Grammar
         return implode(' ', $sql);
     }
 
+    /**
+     * Compiles auto increment.
+     * 
+     * @param int $seed = 1
+     * @param int $increment = 1
+     * @return string
+     */
     protected abstract function compileAutoIncrement(int $seed = 1, int $increment = 1);
 
+    /**
+     * Compiles table primary key column.
+     * 
+     * @return string
+     */
     protected abstract function compilePrimaryKey();
 
+    /**
+     * Compiles table primary key column constraint.
+     * 
+     * @return string
+     */
     protected abstract function compileConstraintPrimaryKey();
 
+    /**
+     * Compiles table column default value.
+     * 
+     * @param mixed $value
+     * @return string
+     */
     protected function compileDefaultValue($value)
     {
         return sprintf('DEFAULT %s', $value);
     }
 
+    /**
+     * Compiles insert output clause.
+     * 
+     * @param array $output
+     * @return string
+     */
     protected function compileInsertOutputClause(array $output)
     {
         return '';
