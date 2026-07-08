@@ -14,6 +14,11 @@ use Collei\Collections\Collection;
 class BelongsToMany extends Relation
 {
     /**
+     * @var bool
+     */
+    private $queryCalled = false;
+
+    /**
      * @var string
      */
     private $joiner;
@@ -90,6 +95,12 @@ class BelongsToMany extends Relation
      */
     public function query()
     {
+        if ($this->queryCalled) {
+            return $this;
+        }
+
+        $this->queryCalled = true;
+
         return $this->table($this->rightTable())
                     ->join($this->joiner(), $this->foreignKey(true), '=', $this->joinerRight())
                     ->join($this->leftTable(), $this->localKey(true), '=', $this->joinerLeft())

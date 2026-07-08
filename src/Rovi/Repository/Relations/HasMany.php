@@ -14,12 +14,23 @@ use Collei\Collections\Collection;
 class HasMany extends Relation
 {
     /**
+     * @var bool
+     */
+    private $queryCalled = false;
+
+    /**
      * Retrieves the relation query.
      * 
      * @return Rovi\Query\Builder
      */
     public function query()
     {
+        if ($this->queryCalled) {
+            return $this;
+        }
+
+        $this->queryCalled = true;
+
         return $this->table($this->rightTable())
                     ->where($this->foreignKey(true), '=', $this->left()->getKey());
     }
