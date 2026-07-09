@@ -691,6 +691,20 @@ abstract class Grammar
         return sprintf('(%s %s %s)', $field, $operator, $value);
     }
 
+    /**
+     * Compiles select statement.
+     * 
+     * @param string $select
+     * @param string $from
+     * @param array $joins = null
+     * @param array $wheres = null
+     * @param array $groups = null
+     * @param array $havings = null
+     * @param array $orders = null
+     * @param int $offset = null
+     * @param int $limit = null
+     * @return string
+     */
     public function compileStatementSelect(
         $select,
         $from,
@@ -737,6 +751,15 @@ abstract class Grammar
         return implode(' ', $sql);
     }
 
+    /**
+     * Compiles insert-values statement.
+     * 
+     * @param string $table
+     * @param array $fields
+     * @param array $values
+     * @param array $output = null
+     * @return string
+     */
     public function compileStatementInsertValues(
         string $table,
         array $fields,
@@ -756,6 +779,15 @@ abstract class Grammar
         return implode(' ', $sql);
     }
 
+    /**
+     * Compiles insert-select statement.
+     * 
+     * @param string $table
+     * @param array $fields
+     * @param string $selectSql
+     * @param array $output = null
+     * @return string
+     */
     public function compileStatementInsertSelect(
         string $table,
         array $fields,
@@ -775,6 +807,14 @@ abstract class Grammar
         return implode(' ', $sql);
     }
 
+    /**
+     * Compiles update statement.
+     * 
+     * @param string $table
+     * @param array $setItems
+     * @param array $wheres = null
+     * @return string
+     */
     public function compileStatementUpdate(
         string $table,
         array $setItems,
@@ -795,6 +835,13 @@ abstract class Grammar
         return implode(' ', $sql);
     }
 
+    /**
+     * Compiles delete statement.
+     * 
+     * @param string $table
+     * @param array $wheres = null
+     * @return string
+     */
     public function compileStatementDelete(
         string $table,
         ?array $wheres = null
