@@ -507,26 +507,58 @@ abstract class Grammar
         return sprintf('SELECT %s', implode(', ', $select));
     }
 
+    /**
+     * Compiles from clause.
+     * 
+     * @param string $from
+     * @param string $alias = null
+     * @param bool $nesting = false
+     * @return string
+     */
     public function compileFromClause(string $from, ?string $alias = null, bool $nesting = false)
     {
         return sprintf('FROM %s', $this->compileAlias($from, $alias, $nesting));
     }
 
+    /**
+     * Compiles where clause.
+     * 
+     * @param array $conditions
+     * @return string
+     */
     public function compileWhereClause(array $conditions)
     {
         return sprintf('WHERE %s', $this->compileConditions($conditions));
     }
 
+    /**
+     * Compiles group-by clause.
+     * 
+     * @param array $groups
+     * @return string
+     */
     public function compileGroupByClause(array $groups)
     {
         return sprintf('GROUP BY %s', implode(', ', $groups));        
     }
 
+    /**
+     * Compiles having clause.
+     * 
+     * @param array $conditions
+     * @return string
+     */
     public function compileHavingClause(array $conditions)
     {
         return sprintf('HAVING %s', $this->compileConditions($conditions));
     }
 
+    /**
+     * Compiles order-by clause.
+     * 
+     * @param array $orders
+     * @return string
+     */
     public function compileOrderByClause(array $orders)
     {
         $items = [];
@@ -548,11 +580,24 @@ abstract class Grammar
         return sprintf('ORDER BY %s', implode(', ', $items));        
     }
 
+    /**
+     * Compiles insert statement header.
+     * 
+     * @param string $table
+     * @param array $fields
+     * @return string
+     */
     public function compileInsertTable(string $table, array $fields)
     {
         return sprintf('INSERT INTO %s (%s)', $table, implode(', ', $fields));
     }
 
+    /**
+     * Compiles insert values clause.
+     * 
+     * @param array $values
+     * @return string
+     */
     public function compileInsertValuesClause(array $values)
     {
         if (is_array(current($values))) {
@@ -570,6 +615,12 @@ abstract class Grammar
         return sprintf('VALUES (%s)', implode(', ', $values));
     }
 
+    /**
+     * Quotes the value if plain string, leaving anything else unquoted.
+     * 
+     * @param mixed $value
+     * @return string
+     */
     protected function quoteIfString($value)
     {
         if (is_string($value) && (1 !== preg_match(self::REGEX_SQL_BINDING_VARIABLE, $value))) {
@@ -595,11 +646,23 @@ abstract class Grammar
         return $value;
     }
 
+    /**
+     * Compiles update statement header.
+     * 
+     * @param string $table
+     * @return string
+     */
     public function compileUpdateTable(string $table)
     {
         return sprintf('UPDATE %s', $table);
     }
 
+    /**
+     * Compiles update set clause.
+     * 
+     * @param array $items
+     * @return string
+     */
     public function compileUpdateSetClause(array $items)
     {
         if (empty($items)) {
@@ -609,11 +672,23 @@ abstract class Grammar
         return sprintf('SET %s', implode(', ', $items));
     }
 
+    /**
+     * Compiles delete statement header.
+     * 
+     * @param string $table
+     * @return string
+     */
     public function compileDeleteTable(string $table)
     {
         return sprintf('DELETE FROM %s', $table);
     }
 
+    /**
+     * Normalize join type.
+     * 
+     * @param string $joinTable
+     * @return string
+     */
     protected function conformJoinType(string $joinType)
     {
         $joinType .= ' join';
@@ -627,6 +702,12 @@ abstract class Grammar
         return $joinType;
     }
 
+    /**
+     * Compiles a chain of conditions.
+     * 
+     * @param array $conditions
+     * @return string
+     */
     protected function compileConditions(array $conditions)
     {
         $compiled = [];
@@ -654,6 +735,14 @@ abstract class Grammar
         return implode(' ', $compiled);
     }
 
+    /**
+     * Compiles a single condition.
+     * 
+     * @param mixed $field
+     * @param mixed $operator
+     * @param mixed $value
+     * @return string
+     */
     protected function compileCondition($field, $operator, $value)
     {
         $operator = preg_replace('/\s+/', ' ', strtoupper(trim($operator)));
