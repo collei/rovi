@@ -87,6 +87,38 @@ final class Connector
         return self::$connectionPool[$name] ?? null;
     }
 
+    /**
+     * Retrieves the first connection it finds, if any.
+     * 
+     * @param string $name = null
+     * @param string $type = null
+     * @return Rovi\Connections\Connection|null
+     */
+    public static function getAnyConnection(?string $name = null, ?string $type = null)
+    {
+        if ($conn = static::getConnection($name ?? '')) {
+            if (empty($type)) {
+                return $conn;
+            }
+
+            if ($conn->isType($type)) {
+                return $conn;
+            }
+        }
+
+        foreach (self::$connectionPool as $conn) {
+            if (empty($type)) {
+                return $conn;
+            }
+
+            if ($conn->isType($type)) {
+                return $conn;
+            }
+        }
+
+        return null;
+    }
+
 	/**
 	 * Initializes a new instance
 	 *
