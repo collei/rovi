@@ -158,7 +158,7 @@ abstract class Connection
      * @param string|null $type
      * @return bool
      */
-    public function isType(string $type = null)
+    public function isType(?string $type = null)
     {
         if (empty($type)) {
             return false;
