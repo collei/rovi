@@ -37,15 +37,6 @@ class SqlServerGrammar extends Grammar
         'guid' => 'varchar(38)',
         'year' => 'year',
     ];
-
-    protected const DB_DECIMAL_TYPES = [
-        'decimal' => 'decimal(%s,%s)',
-    ];
-
-    protected const DB_STRING_TYPES = [
-        'varchar' => 'varchar(%s)',
-        'char' => 'char(%s)',
-    ];
     
     protected const DB_TYPES_DEFAULTS = [
         'int' => 0,
@@ -71,60 +62,33 @@ class SqlServerGrammar extends Grammar
         'year' => 'YEAR(CURDATE())',
     ];
 
-    public function isValidOperator($operator)
-    {
-        if (in_array($operator, self::SQL_OPERATORS, true)) {
-            return true;
-        }
-
-        if (! is_string($operator)) {
-            return false;
-        }
-
-        return array_key_exists(strtolower($operator), self::SQL_OPERATORS);
-    }
-
-    public function compileCreateTable(string $name, array $compiledFields = [])
-    {
-        return sprintf(
-            'CREATE TABLE %s (%s);',
-            $name,
-            PHP_EOL . implode(','.PHP_EOL, $compiledFields) . PHP_EOL
-        );
-    }
-
-    public function compileColumnPrimaryKey(string $name, string $type, bool $isIdentity = true)
-    {
-        return sprintf(
-            '%s %s NOT NULL %s %s',
-            $name,
-            $type,
-            ($isIdentity ? $this->compileAutoIncrement() : null),
-            $this->compilePrimaryKey()
-        );
-    }
-
-    public function compileColumn(string $name, string $type, bool $isNullable = true, $default = null)
-    {
-        return sprintf(
-            '%s %s %s %s',
-            $name,
-            $type,
-            ($isNullable ? 'NULL' : 'NOT NULL'),
-            (is_null($default) ? null : $default)
-        );
-    }
-
+    /**
+     * Compiles auto increment.
+     * 
+     * @param int $seed = 1
+     * @param int $increment = 1
+     * @return string
+     */
     protected function compileAutoIncrement(int $seed = 1, int $increment = 1)
     {
         return sprintf('IDENTITY(%s,%s)', $seed, $increment);
     }
 
+    /**
+     * Compiles table primary key column.
+     * 
+     * @return string
+     */
     protected function compilePrimaryKey()
     {
         return 'PRIMARY KEY';
     }
 
+    /**
+     * Compiles table primary key column constraint.
+     * 
+     * @return string
+     */
     protected function compileConstraintPrimaryKey()
     {
         return 'CONSTRAINT PRIMARY KEY (%s)';
