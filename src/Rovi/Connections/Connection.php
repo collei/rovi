@@ -43,6 +43,11 @@ abstract class Connection
     private $logger = null;
 
     /**
+     * @var array|null
+     */
+    protected $dbVersion = null;
+
+    /**
      * @var string
      */
     protected $name;
@@ -102,6 +107,70 @@ abstract class Connection
 
         $this->initialize();
 	}
+
+    /**
+     * Extract and save DB version.
+     * 
+     * @return void;
+     */
+    protected abstract function extractDbVersion();
+
+    /**
+     * Parses a version number, if any.
+     * 
+     * @return array|null
+     */
+    protected final function parseDbVersionNumber(string $version)
+    {
+        $version = preg_replace('/[^0-9\.]/', '', $version);
+
+        if (preg_match('/^[0-9]+(\.[0-9]+)*$/', $version) !== 1) {
+            return null;
+        }
+
+        while (substr_count($version, '.') < 3) {
+            $version .= '.0';
+        }
+
+        return explode('.', $version);
+    }
+
+    /**
+     * Retrieves the running database version.
+     * 
+     * @return array|null
+     */
+    public final function getDbVersion()
+    {
+        if ($this->dbVersion) {
+            return $this->dbVersion;
+        }
+
+        return $this->dbVersion = $this->extractDbVersion();
+    }
+
+    /**
+     * Compares the running database version against the given one.
+     * 
+     * @param string $version
+     * @return int|null
+     */
+    public final function compareDbVersion(string $version)
+    {
+        if ($result = $this->parseDbVersionNumber($version)) if ($current = $this->getDbVersion()) {
+            if ($current > $result) {
+                return 1;
+            }
+
+            if ($current < $result) {
+                return -1;
+            }
+
+            return 0;
+        }
+
+        return null;
+    }
 
     /**
      * Returns the name of the connection.
