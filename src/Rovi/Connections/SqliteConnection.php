@@ -2,6 +2,7 @@
 namespace Rovi\Connections;
 
 use Rovi\Query\Grammars\SqliteGrammar;
+use Rovi\Query\Grammars\Sqlite335Grammar;
 
 /**
  * Sqlite connection.
@@ -28,7 +29,13 @@ class SqliteConnection extends Connection
 	 */
     protected function initialize()
     {
-        $this->grammar = new SqliteGrammar();
+        $compare = $this->compareDbVersion('3.35.0');
+
+        if (! is_null($compare)) {
+            $this->grammar = ($compare >= 0) ? new Sqlite335Grammar() : new SqliteGrammar();
+        }
+
+		$this->grammar = new SqliteGrammar();
 
 		$this->open();
 
