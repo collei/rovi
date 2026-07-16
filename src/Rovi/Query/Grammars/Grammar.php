@@ -137,11 +137,6 @@ abstract class Grammar
     ];
 
     /**
-     * @var string|null
-     */
-    protected $dbEngineVersion = null;
-
-    /**
      * @var int
      */
     protected $defaultStringSize = 50;
@@ -169,41 +164,6 @@ abstract class Grammar
     public final function __construct()
     {
         $this->init();
-    }
-
-    /**
-     * DB vendor engine version.
-     * 
-     * @return string|null
-     */
-    public final function engineVersion()
-    {
-        return $this->dbEngineVersion;
-    }
-
-    /**
-     * Comparator for the DB vendor engine versions.
-     * 
-     * @return void
-     */
-    public final function engineVersionCompare(string $queried)
-    {
-        if (empty($this->dbEngineVersion) || empty($queried)) {
-            return -1;
-        }
-
-        $filler = function($n) {
-            while (strlen($n) < 4) $n = '0'.$n;
-            return $n;
-        };
-
-        list($set, $queried) = array(explode('.', $this->dbEngineVersion), explode('.', $queried));
-
-        list($set, $queried) = array(array_map($filler, $set), array_map($filler, $queried));
-        
-        list($set, $queried) = array(implode('.', $set), implode('.', $queried));
-
-        return strcasecmp($set, $queried);
     }
 
     /**
