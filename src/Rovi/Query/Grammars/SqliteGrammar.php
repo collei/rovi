@@ -55,11 +55,7 @@ class SqliteGrammar extends Grammar
      */
     protected function init()
     {
-        $dbh = new PDO('sqlite::memory:');
-        $sqliteVersion = trim($dbh->query('select sqlite_version()')->fetch()[0]);
-        $dbh = null;
-        
-        $this->dbEngineVersion = $sqliteVersion;
+        //
     }
 
     /**
@@ -102,10 +98,6 @@ class SqliteGrammar extends Grammar
      */
     protected function compileInsertOutputClause($output)
     {
-        if ($this->engineVersionCompare('3.35.0') >= 0) {
-            return sprintf('RETURNING %s', implode(', ', $output));
-        }
-
         return '';
     }
 }
