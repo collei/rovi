@@ -122,17 +122,21 @@ abstract class Connection
      */
     protected final function parseDbVersionNumber(string $version)
     {
-        $version = preg_replace('/[^0-9\.]/', '', $version);
+    	$version = preg_replace(['/[^0-9\.]/','/\.\.+/'], ['','.0.'], $version);
 
-        if (preg_match('/^[0-9]+(\.[0-9]+)*$/', $version) !== 1) {
-            return null;
+        $version = trim($version, '.');
+
+    	$version_arr = explode('.', $version);
+
+        $version_arr = array_map(function($item) {
+            return (int) $item;
+        }, $version_arr);
+
+        while (count($version_arr) < 4) {
+            $version_arr[] = 0;
         }
 
-        while (substr_count($version, '.') < 3) {
-            $version .= '.0';
-        }
-
-        return explode('.', $version);
+        return $version_arr;
     }
 
     /**
