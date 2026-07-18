@@ -109,9 +109,9 @@ abstract class Connection
 	}
 
     /**
-     * Extract and save DB version.
+     * Extract DB version.
      * 
-     * @return void;
+     * @return string|null;
      */
     protected abstract function extractDbVersion();
 
