@@ -3,6 +3,7 @@ namespace Rovi\Connections;
 
 use Rovi\Query\Grammars\SqliteGrammar;
 use Rovi\Query\Grammars\Sqlite335Grammar;
+use PDO;
 
 /**
  * Sqlite connection.
@@ -43,5 +44,28 @@ class SqliteConnection extends Connection
 		$this->getHandle()->exec('PRAGMA cache_size=-8000');   // Cache de 8MB
 		$this->getHandle()->exec('PRAGMA temp_store=MEMORY');
 		$this->getHandle()->exec('PRAGMA mmap_size=268435456'); // 256MB mapeamento de memória		
+    }
+
+    /**
+     * Extract DB version.
+     * 
+     * @return string|null;
+     */
+    protected function extractDbVersion()
+    {
+        // defaults to SQLite 3 version
+        $version = '3.0.0.0';
+
+		$conn = ($conn = $this->getHandle()) ? $conn : new PDO('sqlite::memory:');
+
+		$stmt = $conn->query('SELECT sqlite_version()');
+
+        $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
+
+        if (preg_match('/(?<build>[0-9]+\.[0-9]+\.[0-9\.]+)/', $info, $extract) === 1) {
+            $version = $extract['build'];
+        }
+
+        return $this->parseDbVersionNumber($version);
     }
 }
