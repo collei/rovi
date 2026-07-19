@@ -48,6 +48,11 @@ abstract class Connection
     protected $dbVersion = null;
 
     /**
+     * @var array|null
+     */
+    protected $dbVersionString = null;
+
+    /**
      * @var string
      */
     protected $name;
