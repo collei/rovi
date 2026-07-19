@@ -60,7 +60,7 @@ class SqliteConnection extends Connection
 
 		$stmt = $conn->query('SELECT sqlite_version()');
 
-        $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
+        $this->dbVersionString = $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
 
         if (preg_match('/(?<build>[0-9]+\.[0-9]+\.[0-9\.]+)/', $info, $extract) === 1) {
             $version = $extract['build'];

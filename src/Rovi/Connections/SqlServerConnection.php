@@ -51,7 +51,7 @@ class SqlServerConnection extends Connection
 
         $stmt = $this->getHandle()->query('SELECT @@version');
 
-        $info = $stmt->fetch(PDO::FETCH_NUM) ?? '';
+        $this->dbVersionString = $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
 
         if (preg_match('/(?<build>[0-9]+\.[0-9]+\.[0-9\.]+)/', $info, $extract) === 1) {
             $version = $extract['build'];
