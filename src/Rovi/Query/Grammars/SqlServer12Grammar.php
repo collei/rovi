@@ -9,7 +9,6 @@ use Rovi\Connections\Connector;
 
 class SqlServer12Grammar extends Grammar
 {
-
     /**
      * Compiles select statement.
      * 
