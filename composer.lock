@@ -4,27 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08a95f04412fd8f91ae3de642178d910",
+    "content-hash": "544246aec3ee268bc499ad1977b8b312",
     "packages": [
         {
             "name": "collei/collection",
-            "version": "dev-main",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/collei/collection.git",
-                "reference": "6b5d624526c7f4613397e6439dd901518cf93bcc"
+                "reference": "bf5844cd9a9c3b997883fe060542a4083a7fcadf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/collei/collection/zipball/6b5d624526c7f4613397e6439dd901518cf93bcc",
-                "reference": "6b5d624526c7f4613397e6439dd901518cf93bcc",
+                "url": "https://api.github.com/repos/collei/collection/zipball/bf5844cd9a9c3b997883fe060542a4083a7fcadf",
+                "reference": "bf5844cd9a9c3b997883fe060542a4083a7fcadf",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "php": "^7.0 || ^8.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -49,14 +48,14 @@
                 "collection"
             ],
             "support": {
-                "source": "https://github.com/collei/collection/tree/main",
+                "source": "https://github.com/collei/collection/tree/v1.0.0",
                 "issues": "https://github.com/collei/collection/issues"
             },
-            "time": "2026-07-01T23:07:22+00:00"
+            "time": "2026-05-30T18:07:41+00:00"
         },
         {
             "name": "psr/log",
-            "version": "dev-master",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
@@ -71,7 +70,6 @@
             "require": {
                 "php": ">=8.0.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -108,11 +106,8 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "collei/collection": 20,
-        "psr/log": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

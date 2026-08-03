@@ -9,7 +9,7 @@
             "email": "alarido.su@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "repositories": [
         {
             "type": "vcs",
@@ -18,8 +18,8 @@
     ],
     "require": {
         "php": "^8.0",
-        "collei/collection": "dev-main",
-        "psr/log": "3.x-dev"
+        "collei/collection": "^1.0",
+        "psr/log": "^3.0"
     },
     "autoload": {
         "psr-4": {
