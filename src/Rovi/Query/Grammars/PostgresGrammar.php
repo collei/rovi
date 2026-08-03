@@ -10,6 +10,83 @@ use Rovi\Query\Expressions\Expression;
 class PostgresGrammar extends Grammar
 {
     /**
+     * @var array
+     */
+    protected const TYPES = [
+        'int' => ['integer','int','tinyint','smallint','mediumint','bigint'],
+        'float' => ['float','double','decimal','numeric'],
+        'string' => ['varchar','char','text','tinyblob','blob','mediumblob','longblob'],
+        'bool' => ['boolean'],
+        DateTime::class => ['date','datetime','timestamp','year'],
+    ];
+
+    /**
+     * @var array
+     */
+    protected const DB_TYPES = [
+        'int' => 'integer',
+        'integer' => 'integer',
+        'tinyint' => 'tinyint',
+        'smallint' => 'smallint',
+        'mediumint' => 'mediumint',
+        'bigint' => 'bigint',
+        'decimal' => 'numeric(%s,%s)',
+        'float' => 'double precision',
+        'double' => 'double precision',
+        'boolean' => 'boolean',
+        'varchar' => 'varchar(%s)',
+        'char' => 'char(%s)',
+        'longtext' => 'text',
+        'text' => 'text',
+        'tinyblob' => 'tinyblob',
+        'blob' => 'bytea',
+        'mediumblob' => 'mediumblob',
+        'longblob' => 'longblob',
+        'date' => 'date',
+        'datetime' => 'timestamp',
+        'timestamp' => 'timestamp',
+        'guid' => 'varchar(38)',
+        'year' => 'year',
+    ];
+    
+    /**
+     * @var array
+     */
+    protected const DB_TYPES_DEFAULTS = [
+        'integer' => 0,
+        'tinyint' => 0,
+        'smallint' => 0,
+        'mediumint' => 0,
+        'bigint' => 0,
+        'boolean' => false,
+        'decimal' => 0,
+        'double' => 0,
+        'double precision' => 0,
+        'varchar' => '',
+        'char' => '',
+        'text' => '',
+        'tinyblob' => '',
+        'blob' => '',
+        'bytea' => '',
+        'mediumblob' => '',
+        'longblob' => '',
+        'date' => 'CURRENT_TIMESTAMP',
+        'datetime' => 'CURRENT_TIMESTAMP',
+        'timestamp' => 'CURRENT_TIMESTAMP',
+        'year' => 'YEAR(CURDATE())',
+    ];
+
+    /**
+     * Custom grammar initialization.
+     * 
+     * @return void
+     */
+    protected function init()
+    {
+        //
+    }
+    
+    /**
      * Compiles select statement.
      * 
      * @param string $select

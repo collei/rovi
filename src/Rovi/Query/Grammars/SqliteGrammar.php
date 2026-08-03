@@ -14,9 +14,9 @@ class SqliteGrammar extends Grammar
      */
     protected const TYPES = [
         'int' => ['integer','int','tinyint','smallint','mediumint','bigint'],
-        'float' => ['float','double','decimal','numeric'],
+        'float' => ['float','double','decimal','numeric','real'],
         'string' => ['varchar','char','tinytext','text','tinyblob','blob','mediumblob','longblob'],
-        'bool' => ['bit'],
+        'bool' => ['integer'],
         DateTime::class => ['date','datetime','timestamp','year'],
     ];
 
@@ -24,28 +24,28 @@ class SqliteGrammar extends Grammar
      * @var array
      */
     protected const DB_TYPES = [
-        'int' => 'int',
+        'int' => 'integer',
         'integer' => 'integer',
-        'tinyint' => 'tinyint',
-        'smallint' => 'smallint',
-        'mediumint' => 'mediumint',
-        'bigint' => 'bigint',
-        'decimal' => 'decimal(%s,%s)',
-        'float' => 'float',
-        'double' => 'double',
-        'varchar' => 'varchar(%s)',
-        'char' => 'char(%s)',
-        'tinytext' => 'tinytext',
+        'tinyint' => 'integer',
+        'smallint' => 'integer',
+        'mediumint' => 'integer',
+        'bigint' => 'integer',
+        'decimal' => 'numeric',
+        'float' => 'real',
+        'double' => 'real',
+        'varchar' => 'text',
+        'char' => 'text',
+        'tinytext' => 'text',
         'text' => 'text',
-        'tinyblob' => 'tinyblob',
+        'tinyblob' => 'text',
         'blob' => 'blob',
-        'mediumblob' => 'mediumblob',
-        'longblob' => 'longblob',
-        'date' => 'date',
-        'datetime' => 'datetime',
-        'timestamp' => 'timestamp',
-        'guid' => 'varchar(38)',
-        'year' => 'year',
+        'mediumblob' => 'blob',
+        'longblob' => 'blob',
+        'date' => 'text',
+        'datetime' => 'text',
+        'timestamp' => 'text',
+        'guid' => 'text',
+        'year' => 'integer',
     ];
 
     /**
