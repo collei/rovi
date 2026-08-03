@@ -1,6 +1,6 @@
 {
     "name": "collei/rovi",
-    "description": "A simple PHP-annotation-based ORM.",
+    "description": "Independent query builder for PHP",
     "type": "library",
     "license": "MIT",
     "authors": [
