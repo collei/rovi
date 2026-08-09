@@ -1,0 +1,20 @@
+{
+    "version": "1.0.1",
+    "logs": {
+        "path": "logs/rovi.log",
+        "level": "DEBUG" 
+    },
+    "db": {
+        "default": "useiro",
+        "connections": [
+            {
+                "name": "useiro",
+                "type": "sqlite",
+                "server": null,
+                "database": "sqlite-example.db",
+                "user": null,
+                "password": null
+            }
+        ]
+    }
+}
