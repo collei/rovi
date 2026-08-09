@@ -2,6 +2,7 @@
 namespace Rovi;
 
 use RuntimeException;
+use InvalidArgumentException;
 use Rovi\Connections\Connector;
 use Rovi\Connections\ConnectionBuilder;
 
@@ -39,10 +40,17 @@ class RoviManager
 
         if (is_string($configInfo)) {
             $this->loadConfig($configInfo);
-        } elseif (is_array($configInfo)) {
+            return;
+        }
+        
+        if (is_array($configInfo)) {
             $this->config = json_decode(json_encode($configInfo), false, 512, JSON_OBJECT_AS_ARRAY);
-        } elseif (is_object($configInfo)) {
+            return;
+        }
+        
+        if (is_object($configInfo)) {
             $this->config = $configInfo;
+            return;
         }
 
         throw new InvalidArgumentException(
