@@ -17,9 +17,9 @@ class RoviManager
     private const CONN_PARAMETERS = ['name','type','server','database','user','password'];
 
     /**
-     * @var array
+     * @var object
      */
-    private $config = [];
+    private $config = null;
 
     /**
      * @var string|null
@@ -28,10 +28,27 @@ class RoviManager
 
     /**
      * Constructor
+     * 
+     * @param string|array|object|null $configInfo 
      */
-    public function __construct(string $file)
+    public function __construct($configInfo = null)
     {
-        $this->loadConfig($file);
+        if (empty($configInfo) || 0 == $configInfo || false == $configInfo) {
+            return;
+        }
+
+        if (is_string($configInfo)) {
+            $this->loadConfig($configInfo);
+        } elseif (is_array($configInfo)) {
+            $this->config = json_decode(json_encode($configInfo), false, 512, JSON_OBJECT_AS_ARRAY);
+        } elseif (is_object($configInfo)) {
+            $this->config = $configInfo;
+        }
+
+        throw new InvalidArgumentException(
+            'The parameter should be either a string (a path to the config file),'
+            . ' an array, an object, or an empty value.'
+        );
     }
 
     /**
@@ -43,7 +60,7 @@ class RoviManager
      * @throws RuntimeException when file does not exist or it is not readable
      * @throws RuntimeException when json_decode() gets failed (PHP < 7.3)
      */
-    protected function loadConfig(string $fileName)
+    public function loadConfig(string $fileName)
     {
         $file = $this->configFile = $fileName;
 
