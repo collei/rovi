@@ -1,7 +1,9 @@
 /vendor/
+/logs/
 /Models/
 *.txt
 *.zip
 *.db
 index.php
 appsettings.json
+rovi-config.json
