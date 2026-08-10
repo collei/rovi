@@ -112,7 +112,7 @@ class RoviManager
         
         $json = json_decode($content, false, 512, $json_flag);
 
-        if (0 === $json_flag && 0 !== json_last_error()) {
+        if (0 === $json_flag && JSON_ERROR_NONE !== json_last_error()) {
             throw new RuntimeException(json_last_error_msg());
         }
 
@@ -141,7 +141,7 @@ class RoviManager
     public function getConnection(?string $name = null)
     {
         if (empty($name) && ! empty($this->config->db->default)) {
-            $name = $this->config->db->default;
+            $name = $this->config->db->default ?? 'default';
         }
 
         if ($connection = Connector::getAnyConnection($name)) {
@@ -152,22 +152,30 @@ class RoviManager
             return null;
         }
 
-        if (! empty($this->config->db->connections)) foreach ($this->config->db->connections as $connInfo) {
+        if (empty($this->config->db->connections)) {
+            return null;
+        }
+
+        foreach ($this->config->db->connections as $connInfo) {
             if ($name != $connInfo->name) {
                 continue;
             }
 
-            $conn = ConnectionBuilder::named($conn_name = $name);
+            $builder = ConnectionBuilder::named($conn_name = $name);
 
             foreach (self::CONN_PARAMETERS as $param) {
                 $value = $connInfo->$param;
                 
                 if (! empty($value)) {
-                    $conn->{$param}($value);
+                    $builder->{$param}($value);
                 }
             }
 
-            return $conn->connect()->open();
+            if ($logger = $this->provideLoggerFor($name)) {
+                return $builder->build()->withLogger($logger)->open();
+            }
+
+            return $builder->build()->open();
         }
     }
 }
