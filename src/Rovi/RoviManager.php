@@ -122,7 +122,7 @@ class RoviManager
             return null;
         }
 
-        foreach ($this->config->db->connections as $connInfo) {
+        if (! empty($this->config->db->connections)) foreach ($this->config->db->connections as $connInfo) {
             if ($name != $connInfo->name) {
                 continue;
             }
