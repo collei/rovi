@@ -131,11 +131,11 @@ final class ConnectionBuilder
     }
 
     /**
-     * Performs the connection.
+     * Performs the connection building.
      * 
      * @return Rovi\Connections\Connection
      */
-    public function connect()
+    public function build()
     {
         if (empty($this->type)) {
             throw new InvalidArgumentException(
