@@ -31,7 +31,17 @@ class RoviManager
     /**
      * @var array
      */
+    private $connections = [];
+
+    /**
+     * @var array
+     */
     private $loggers = [];
+
+    /**
+     * @var static
+     */
+    private static $instance = null;
 
     /**
      * Constructor
@@ -40,23 +50,30 @@ class RoviManager
      */
     public function __construct($configInfo = null)
     {
+        $started = false;
+
         if (empty($configInfo) || 0 == $configInfo || false == $configInfo) {
             $this->setDefaultConfig();
-            return;
+            $started = true;
         }
 
         if (is_string($configInfo)) {
             $this->loadConfig($configInfo);
-            return;
+            $started = true;
         }
         
         if (is_array($configInfo)) {
             $this->config = json_decode(json_encode($configInfo), false, 512, JSON_OBJECT_AS_ARRAY);
-            return;
+            $started = true;
         }
         
         if (is_object($configInfo)) {
             $this->config = $configInfo;
+            $started = true;
+        }
+
+        if ($started) {
+            self::$instance = $this;
             return;
         }
 
@@ -64,6 +81,16 @@ class RoviManager
             'The parameter should be either a string (a path to the config file),'
             . ' an array, an object, or an empty value.'
         );
+    }
+
+    /**
+     * Retrieves the current instance, if any.
+     * 
+     * @return static
+     */
+    public static function instance()
+    {
+        return self::$instance;
     }
 
     /**
@@ -129,7 +156,7 @@ class RoviManager
      */
     public function hasConnection(string $name)
     {
-        return Connector::hasConnection($name);
+        return array_key_exists($name, $this->connections);
     }
 
     /**
@@ -144,8 +171,8 @@ class RoviManager
             $name = $this->config->db->default ?? 'default';
         }
 
-        if ($connection = Connector::getAnyConnection($name)) {
-            return $connection;
+        if ($this->hasConnection($name)) {
+            return $this->connections[$name];
         }
 
         if (empty($name)) {
@@ -171,12 +198,42 @@ class RoviManager
                 }
             }
 
-            if ($logger = $this->provideLoggerFor($name)) {
-                return $builder->build()->withLogger($logger)->open();
+            return $this->connections[$name] = ($logger = $this->provideLoggerFor($name))
+                ? $builder->build()->withLogger($logger)->open()
+                : $builder->build()->open();
+        }
+    }
+
+    /**
+     * Retrieves the first connection it finds, if any.
+     * 
+     * @param string $name = null
+     * @param string $type = null
+     * @return Rovi\Connections\Connection|null
+     */
+    public function getAnyConnection(?string $name = null, ?string $type = null)
+    {
+        if ($connection = $this->getConnection($name ?? '')) {
+            if (empty($type)) {
+                return $connection;
             }
 
-            return $builder->build()->open();
+            if ($connection->isType($type)) {
+                return $connection;
+            }
         }
+
+        foreach ($this->connections as $connection) {
+            if (empty($type)) {
+                return $connection;
+            }
+
+            if ($connection->isType($type)) {
+                return $connection;
+            }
+        }
+
+        return null;
     }
 
     /**

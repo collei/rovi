@@ -8,6 +8,7 @@ use DateTime;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Rovi\RoviManager;
 
 /**
  * Connection factory
@@ -59,62 +60,18 @@ final class Connector
     ];
 
     /**
-     * @var array
+     * @var Rovi\RoviManager
      */
-    protected static $connectionPool = [];
+    protected $manager = null;
 
     /**
-     * Retrieves the connection, if any.
+     * Constructor.
      * 
-     * @param string $name
-     * @return bool
+     * @param Rovi\Manager $manager
      */
-    public static function hasConnection(string $name)
+    public function __construct(RoviManager $manager)
     {
-        return array_key_exists($name, self::$connectionPool);
-    }
-
-    /**
-     * Retrieves the connection, if any.
-     * 
-     * @param string $name
-     * @return Rovi\Connections\Connection|null
-     */
-    public static function getConnection(string $name)
-    {
-        return self::$connectionPool[$name] ?? null;
-    }
-
-    /**
-     * Retrieves the first connection it finds, if any.
-     * 
-     * @param string $name = null
-     * @param string $type = null
-     * @return Rovi\Connections\Connection|null
-     */
-    public static function getAnyConnection(?string $name = null, ?string $type = null)
-    {
-        if ($conn = static::getConnection($name ?? '')) {
-            if (empty($type)) {
-                return $conn;
-            }
-
-            if ($conn->isType($type)) {
-                return $conn;
-            }
-        }
-
-        foreach (self::$connectionPool as $conn) {
-            if (empty($type)) {
-                return $conn;
-            }
-
-            if ($conn->isType($type)) {
-                return $conn;
-            }
-        }
-
-        return null;
+        $this->manager = $manager;
     }
 
 	/**
@@ -127,7 +84,7 @@ final class Connector
 	 * @param string $password
      * @return Rovi\Connections\Connection 
 	 */
-	public static function build(
+	public function build(
         string $type,
         ?string $server = null,
         ?string $database = null,
@@ -141,7 +98,7 @@ final class Connector
             throw new InvalidArgumentException(sprintf('Unsupported vendor: \'%s\'', $type));
         }
 
-        $dsn = self::buildDsn($vendor, $server, $database, $username, $password);
+        $dsn = $this->buildDsn($vendor, $server, $database, $username, $password);
 
         $class = self::DB_VENDORS[$vendor];
 
@@ -153,14 +110,13 @@ final class Connector
 
         $connection->name($name);
 
-        return self::$connectionPool[$name] = $connection;
+        return $connection;
 	}
 
     /**
      * Builds a DSN string from parameters ,according to the supported vendors.
      * Returns empty string if vendor is not supported.
      * 
-     * @static
      * @param string $vendor
      * @param string|null $server = null
      * @param string|null $database = null
@@ -170,7 +126,7 @@ final class Connector
      * @param string|null $charset = null
      * @return string
      */
-    public static function buildDsn(
+    public function buildDsn(
         string $vendor,
         ?string $server = null,
         ?string $database = null,
@@ -179,7 +135,7 @@ final class Connector
         ?int $port = null,
         ?string $charset = null
     ) {
-        if ($type = self::getSupportedType($vendor)) {
+        if ($type = $this->getSupportedType($vendor)) {
             $port = ($port > 0) ? $port : self::DB_STANDARD_PORTS[$type];
             $charset = is_null($charset) ? 'utf8' : $charset;
 
