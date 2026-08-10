@@ -2,6 +2,7 @@
 namespace Rovi\Connections;
 
 use InvalidArgumentException;
+use Rovi\RoviManager;
 
 /**
  * Connection factory
@@ -39,11 +40,16 @@ final class ConnectionBuilder
     private $password = null;
 
     /**
+     * @var Rovi\RoviManager
+     */
+    private $manager = null;
+
+    /**
      * Create a new ConnectionBuilder instance.
      */
-    public function __construct()
+    public function __construct(RoviManager $manager)
     {
-        //
+        $this->manager = $manager;
     }
 
     /**
@@ -55,7 +61,9 @@ final class ConnectionBuilder
      */
     public static function named(string $name)
     {
-        return (new self)->name($name);
+        $manager = RoviManager::instance();
+
+        return (new self($manager))->name($name);
     }
 
     /**
@@ -149,7 +157,7 @@ final class ConnectionBuilder
             );
         }
 
-        return Connector::build(
+        return (new Connector($this->manager))->build(
             $this->type,
             $this->server,
             $this->database,
