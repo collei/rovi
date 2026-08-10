@@ -41,6 +41,7 @@ class RoviManager
     public function __construct($configInfo = null)
     {
         if (empty($configInfo) || 0 == $configInfo || false == $configInfo) {
+            $this->setDefaultConfig();
             return;
         }
 
@@ -63,6 +64,29 @@ class RoviManager
             'The parameter should be either a string (a path to the config file),'
             . ' an array, an object, or an empty value.'
         );
+    }
+
+    /**
+     * Provides some sort of provisional config to work with.
+     * 
+     * @return void
+     */
+    protected function setDefaultConfig()
+    {
+        $this->config = (object) [
+            'version' => '1.0.1',
+            'logs' => (object) [
+                'enabled' => false,
+                'path' => 'logs/{conn_name}.{date}.{level}.log',
+                'dateFormat' => 'Y-m-d',
+                'dateEntryFormat' => 'Y-m-d H:i:s',
+                'level' => 'ERROR'
+            ],
+            'db' => (object) [
+                'default' => null,
+                'connections' => []
+            ]
+        ];
     }
 
     /**
