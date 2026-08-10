@@ -1,7 +1,7 @@
 <?php
 namespace Rovi\Repository;
 
-use Rovi\Connections\Connector;
+use Rovi\RoviManager;
 use Rovi\Repository\Relations\Relation;
 use Rovi\Repository\Relations\BelongsTo;
 use Rovi\Repository\Relations\HasMany;
@@ -323,8 +323,8 @@ abstract class Model
             return $this->connection;
         }
 
-        if (Connector::hasConnection(static::CONNECTION)) {
-            return $this->connection = Connector::getConnection(static::CONNECTION);
+        if ($connection = RoviManager::instance()->getConnection(static::CONNECTION)) {
+            return $this->connection = $connection;
         }
 
         throw new RoviModelException($this, sprintf('Connection not found: \'%s\'', static::CONNECTION));
