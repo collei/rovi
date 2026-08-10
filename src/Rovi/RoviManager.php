@@ -5,6 +5,7 @@ use RuntimeException;
 use InvalidArgumentException;
 use Rovi\Connections\Connector;
 use Rovi\Connections\ConnectionBuilder;
+use Rovi\Logging\RoviLogger;
 
 /**
  * Manages databse connection.
@@ -26,6 +27,11 @@ class RoviManager
      * @var string|null
      */
     private $configFile = null;
+
+    /**
+     * @var array
+     */
+    private $loggers = [];
 
     /**
      * Constructor
