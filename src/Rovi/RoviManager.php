@@ -178,4 +178,40 @@ class RoviManager
             return $builder->build()->open();
         }
     }
+
+    /**
+     * Catter a Logger as configured if logging is enabled.
+     * 
+     * @return Psr\Log\LoggerInterface|null
+     */
+    protected function provideLogger()
+    {
+        if (! $this->config->logs->enabled) {
+            return null;
+        }
+
+        return (new RoviLogger())
+            ->withPath($this->config->logs->path)
+            ->withDateFormat($this->config->logs->dateFormat)
+            ->withDateEntryFormat($this->config->logs->dateEntryFormat);
+    }
+
+    /**
+     * Catter a Logger as configured if logging is enabled.
+     * 
+     * @param string $connectionName
+     * @return Psr\Log\LoggerInterface|null
+     */
+    protected function provideLoggerFor(string $connectionName)
+    {
+        if (! empty($this->loggers[$connectionName])) {
+            return $this->loggers[$connectionName];
+        }
+
+        if ($logger = $this->provideLogger()) {
+            return $this->loggers[$connectionName] = $logger->withConnectionName($connectionName);
+        }
+
+        return null;
+    }
 }
