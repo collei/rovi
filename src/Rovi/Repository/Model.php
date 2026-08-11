@@ -78,6 +78,11 @@ abstract class Model
     ];
 
     /**
+     * @var \Rovi\RoviManager
+     */
+    private $manager = null;
+
+    /**
      * @var \Rovi\Connections\Connection
      */
     private $connection = null;
@@ -109,6 +114,8 @@ abstract class Model
      */
     public function __construct(array $fields = [])
     {
+        $this->manager = RoviManager::instance();
+
         foreach ($fields as $name => $value) {
             if (! array_key_exists($name, $this->retrieved)) {
                 $this->retrieved[$name] = static::DEFAULTS[$name] ?? null;
@@ -174,15 +181,23 @@ abstract class Model
         $name = $this->transformFieldNamesFrom($name);
         
         if ($this->hydrated && (! array_key_exists($name, $this->retrieved))) {
-            throw new RoviModelException(sprintf(
-                'Not found property \'%s\' on table \'%s\'', $name, static::TABLE
-            ));
+            $message = sprintf('Not found property \'%s\' on table \'%s\'', $name, static::TABLE);
+
+            $exception = new RoviModelException($this, $message);
+
+            $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
+
+            throw $exception;
         }
 
         if (static::KEY === $name) {
-            throw new RoviModelException(sprintf(
-                'Illegal assignment to primary key \'%s\' on table \'%s\'', $name, static::TABLE
-            ));
+            $message = sprintf('Illegal assignment to primary key \'%s\' on table \'%s\'', $name, static::TABLE);
+
+            $exception = new RoviModelException($this, $message);
+
+            $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
+
+            throw $exception;
         }
 
         $this->modified[$name] = $value;
@@ -216,9 +231,13 @@ abstract class Model
         $name = $this->transformFieldNamesFrom($original = $name);
         
         if (in_array($name, static::REQUIRED, true)) {
-            throw new RoviModelException(sprintf(
-                'Non-nullable property \'%s\' on table \'%s\' cannot be nullified', $name, static::TABLE
-            ));
+            $message = sprintf('Non-nullable property \'%s\' on table \'%s\' cannot be nullified', $name, static::TABLE);
+
+            $exception = new RoviModelException($this, $message);
+
+            $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
+
+            throw $exception;
         }
 
         $this->modified[$name] = null;
@@ -323,11 +342,17 @@ abstract class Model
             return $this->connection;
         }
 
-        if ($connection = RoviManager::instance()->getConnection(static::CONNECTION)) {
+        if ($connection = $this->manager->getConnection(static::CONNECTION)) {
             return $this->connection = $connection;
         }
 
-        throw new RoviModelException($this, sprintf('Connection not found: \'%s\'', static::CONNECTION));
+        $message = sprintf('Connection not found: \'%s\'', static::CONNECTION);
+
+        $exception = new RoviModelException($this, $message);
+
+        $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
+
+        throw $exception;
     }
 
     /**
