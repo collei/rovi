@@ -50,13 +50,13 @@ class RoviLogger extends AbstractLogger implements LoggerInterface
             $dir = dirname($filename);
 
             if (! is_dir($dir) && ! is_file($dir)) {
-                mkdir($dir, 0777, true);
+                @mkdir($dir, 0777, true);
             }
         }
 
         $logContent = sprintf('[%s] %s :: %s', date($this->dateEntryFormat), $message, json_encode($context));
 
-        file_put_contents($filename, $logContent, FILE_APPEND);
+        @file_put_contents($filename, $logContent, FILE_APPEND);
     }
 
     /**
