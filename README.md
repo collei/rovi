@@ -19,7 +19,7 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
 
 ```
 {
-    "version": "1.0.1",
+    "version": "1.1.0",
     "logs": {
         "enabled": true,
         "path": "logs/{conn_name}.{date}.{level}.log",
