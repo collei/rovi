@@ -13,9 +13,24 @@ use Psr\Log\InvalidArgumentException;
 class RoviLogger extends AbstractLogger implements LoggerInterface
 {
     /**
+     * @var array
+     */
+    protected const LEVEL_SCALE = ['DEBUG','INFO','NOTICE','WARNING','ERROR','CRITICAL','ALERT','EMERGENCY']; 
+
+    /**
      * @var string
      */
     protected $path = '';
+
+    /**
+     * @var string
+     */
+    protected $minimalLevel = 'WARNING';
+
+    /**
+     * @var int
+     */
+    protected $minimalLevelCalculated = 3;
 
     /**
      * @var string
@@ -42,6 +57,11 @@ class RoviLogger extends AbstractLogger implements LoggerInterface
      */
     public function log($level, string|\Stringable $message, array $context = []): void
     {
+        // Ignores log levels lesser the mininal.
+        if ($this->calcLevelOf($level) < $this->minimalLevelCalculated) {
+            return;
+        }
+
         list($date, $conn_name) = array(date($this->dateFormat), $this->connectionName);
 
         $filename = $this->catterFileName(compact('level','date','conn_name'));
@@ -57,6 +77,45 @@ class RoviLogger extends AbstractLogger implements LoggerInterface
         $logContent = sprintf("[%s] %s :: %s\n", date($this->dateEntryFormat), $message, json_encode($context));
 
         @file_put_contents($filename, $logContent, FILE_APPEND);
+    }
+
+    /**
+     * Defines the minimal log level that will be logged.
+     * 
+     * @param string $level
+     * @return $this
+     * @throws \Psr\Log\InvalidArgumentException for non-existent level
+     */
+    public function withMinimalLevel(string $level)
+    {
+        $result = array_search($importance = strtoupper($level), self::LEVEL_SCALE, true);
+
+        if (false !== $result) {
+            $this->minimalLevel = $importance;
+            $this->minimalLevelCalculated = $result;
+
+            return $this;
+        }
+
+        throw new InvalidArgumentException(sprintf('Invalid log level: %s', $level));
+    }
+
+    /**
+     * Calculates the importance of a log level. Case insensitive.
+     * 
+     * @param string $level
+     * @return int
+     * @throws \Psr\Log\InvalidArgumentException for non-existent level
+     */
+    protected function calcLevelOf(string $level)
+    {
+        $result = array_search(strtoupper($level), self::LEVEL_SCALE, true);
+
+        if (false !== $result) {
+            return $result;
+        }
+
+        throw new InvalidArgumentException(sprintf('Invalid log level: %s', $level));
     }
 
     /**
