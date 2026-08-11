@@ -145,16 +145,24 @@ final class ConnectionBuilder
      */
     public function build()
     {
+        $exception = false;
+
         if (empty($this->type)) {
-            throw new InvalidArgumentException(
+            $exception = new InvalidArgumentException(
                 'Database type cannot be null -- did you forgot calling the type() method when using the connection builder?'
             );
         }
 
         if (empty($this->database)) {
-            throw new InvalidArgumentException(
+            $exception = new InvalidArgumentException(
                 'Database cannot be null -- did you forgot calling the database() method when using the connection builder?'
             );
+        }
+
+        if (false !== $exception) {
+            $this->manager->getLogger()->log('ERROR', $exception->getMessage(), compact('exception'));
+
+            throw $exception;
         }
 
         return (new Connector($this->manager))->build(

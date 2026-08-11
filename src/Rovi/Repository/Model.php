@@ -179,22 +179,21 @@ abstract class Model
     public final function __set(string $name, $value)
     {
         $name = $this->transformFieldNamesFrom($name);
+        $exception = false;
         
         if ($this->hydrated && (! array_key_exists($name, $this->retrieved))) {
             $message = sprintf('Not found property \'%s\' on table \'%s\'', $name, static::TABLE);
 
             $exception = new RoviModelException($this, $message);
-
-            $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
-
-            throw $exception;
         }
 
         if (static::KEY === $name) {
             $message = sprintf('Illegal assignment to primary key \'%s\' on table \'%s\'', $name, static::TABLE);
 
             $exception = new RoviModelException($this, $message);
+        }
 
+        if (false !== $exception) {
             $this->manager->getLogger()->log('ERROR', $message, compact('exception'));
 
             throw $exception;
