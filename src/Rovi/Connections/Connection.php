@@ -311,10 +311,10 @@ abstract class Connection
                 $this->isOpen = false;
             }
 			//
-		} catch (PDOException $ex) {
+		} catch (PDOException $exception) {
 			$reason = sprintf('Error while trying open connection at file \'%s\', line %s', __FILE__, __LINE__);
 
-            throw new DatabaseException($reason, 0, $ex);
+            $errors = $this->processException($exception, '', $reason);
 		}
 
         return $this;
