@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Rovi\Connections\Connector;
 use Rovi\Connections\ConnectionBuilder;
 use Rovi\Logging\RoviLogger;
+use Psr\Log\NullLogger;
 
 /**
  * Manages databse connection.
@@ -91,6 +92,21 @@ class RoviManager
     public static function instance()
     {
         return self::$instance;
+    }
+
+    /**
+     * Retrieves a logger.
+     * 
+     * @param string|null $connectionName
+     * @return Psr\Log\LoggerInterface
+     */
+    public function getLogger(?string $connectionName = null)
+    {
+        $logger = empty($connectionName)
+                ? $this->provideLogger()
+                : $this->provideLoggerFor($connectionName);
+
+        return $logger ? $logger : new NullLogger();
     }
 
     /**
@@ -243,7 +259,7 @@ class RoviManager
      */
     protected function provideLogger()
     {
-        if (! $this->config->logs->enabled) {
+        if (true != ($this->config->logs->enabled ?? false)) {
             return null;
         }
 
