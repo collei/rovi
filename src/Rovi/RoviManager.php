@@ -265,6 +265,7 @@ class RoviManager
 
         return (new RoviLogger())
             ->withPath($this->config->logs->path)
+            ->withMinimalLevel($this->config->logs->level)
             ->withDateFormat($this->config->logs->dateFormat)
             ->withDateEntryFormat($this->config->logs->dateEntryFormat);
     }
