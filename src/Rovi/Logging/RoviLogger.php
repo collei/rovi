@@ -54,7 +54,7 @@ class RoviLogger extends AbstractLogger implements LoggerInterface
             }
         }
 
-        $logContent = sprintf('[%s] %s :: %s', date($this->dateEntryFormat), $message, json_encode($context));
+        $logContent = sprintf("[%s] %s :: %s\n", date($this->dateEntryFormat), $message, json_encode($context));
 
         @file_put_contents($filename, $logContent, FILE_APPEND);
     }
