@@ -10,7 +10,7 @@ Independent query builder for PHP.
 
 ## Requirements
 
-* PHP ^7.1 || ^8.0
+* PHP ^8.0
 * Composer
 
 ## Configuration
@@ -46,11 +46,11 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
 * **version** : (informative) the Rovi number version.
 * **logs** : logging configuration.
   * **enabled** : set it to `true` to enable, or to `false` to disable.
-  * **path** : the folder the logs will be saved to. Available variables are `{conn_name}` (the connection name), `{date}` (the formatted date of file) and `{level}` (the log level). It allows you to organize the log files.
+  * **path** : the folder the logs will be saved to. Available variables are `{conn_name}` (the connection name), `{date}` (the formatted date to be included in the filepath) and `{level}` (the log level). It allows you to organize the log files.
   * **dateFormat** : the date format as accepted by the PHP date() function, used for the filename. Avoid using slashes and any other character unsuitable to filepath.
   * **dateEntryFormat** : the date/time entry format as accepted by the PHP date() function, used for log entries.
   * **level** : the minimal level to be logged. E.g., if you set it to "ERROR", no log of level below ERROR (i.e., DEBUG, INFO, WARNING) will be registered.
-* **db** : the databse configuration.
+* **db** : the database configuration.
   * **default** : the default connection name to be used when none is specified.
   * **connections** : one or more connections to be configured.
     * **name** : name of the connection.
