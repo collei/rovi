@@ -6,7 +6,7 @@ use Rovi\Query\Grammars\PostgresGrammar;
 /**
  * SqlServer connection.
  */
-class SqlServerConnection extends Connection
+class PostgresConnection extends Connection
 {
 	/**
 	 * Initializes a new instance
