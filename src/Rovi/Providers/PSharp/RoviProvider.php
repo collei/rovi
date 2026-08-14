@@ -24,7 +24,21 @@ class RoviProvider extends ServiceProvider
     public function register()
     {
         $this->container->configureBuilder(RoviManager::class, function(Application $app, Config $config){
-            return new RoviManager($config->get('rovi'));
+            $manager = new RoviManager($config->get('rovi'));
+
+            $connections = $config->get('db.connections');
+
+            foreach ($connections as $name => $data) {
+                if ('default' == $name) {
+                    continue;
+                }
+
+                $manager->importDatabaseConnection(
+                    $name, $data['type'], $data['server'], $data['database'], $data['username'], $data['password'], $data['port']
+                );
+            }
+
+            return $manager;
         });
     }
 

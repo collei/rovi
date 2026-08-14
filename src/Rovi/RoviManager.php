@@ -17,7 +17,7 @@ class RoviManager
     /**
      * @var array
      */
-    private const CONN_PARAMETERS = ['name','type','server','database','user','password','port'];
+    private const CONN_PARAMETERS = ['name','type','server','database','user','password'];
 
     /**
      * @var object
@@ -107,6 +107,46 @@ class RoviManager
                 : $this->provideLoggerFor($connectionName);
 
         return $logger ? $logger : new NullLogger();
+    }
+
+	/**
+	 * Import database connection data from external source.
+	 *
+	 * @param string $name
+	 * @param string $type
+	 * @param string|null $server
+	 * @param string|null $database
+	 * @param string|null $username
+	 * @param string|null $password
+	 * @param int|null $port
+     * @return bool
+	 */
+    public function importDatabaseConnection(
+        string $name,
+        string $type,
+        ?string $server = null,
+        ?string $database = null,
+        ?string $user = null,
+        ?string $password = null,
+        ?int $port = null
+    ) {
+        $connList = $this->config->db->connections ?? [];
+
+        foreach ($connList as $connData) {
+            if (strcasecmp($connData->name ?? '', $name) == 0) {
+                return false;
+            }
+        }
+
+        if ([] == $connList) {
+            $this->config->db->connections = [];
+        }
+
+        $this->config->db->connections[] = (object) compact(
+            'name','type','server','port','database','user','password'
+        );
+
+        return true;
     }
 
     /**
