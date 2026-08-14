@@ -25,6 +25,11 @@ final class ConnectionBuilder
     private $server = null;
 
     /**
+     * @var ?int
+     */
+    private $port = null;
+
+    /**
      * @var ?string
      */
     private $database = null;
@@ -103,6 +108,18 @@ final class ConnectionBuilder
     }
 
     /**
+     * Defines the port.
+     * 
+     * @param int $port
+     * @return $this
+     */
+    public function port(int $port)
+    {
+        $this->port = $port;
+        return $this;
+    }
+
+    /**
      * Defines the connection database.
      * 
      * @param string $database
@@ -166,12 +183,13 @@ final class ConnectionBuilder
         }
 
         return (new Connector($this->manager))->build(
+            $this->name,
             $this->type,
             $this->server,
             $this->database,
             $this->user,
             $this->password,
-            $this->name
+            $this->port
         );
     }
 }

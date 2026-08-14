@@ -34,6 +34,7 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
                 "name": "useiro",
                 "type": "sqlite",
                 "server": null,
+                "port": null,
                 "database": "sqlite-example.db",
                 "user": null,
                 "password": null
@@ -56,6 +57,7 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
     * **name** : name of the connection.
     * **type** : it refers to the DBMS vendor (e.g., "sqlite", "mssql", "mysql" etc).
     * **server** : the DBMS server address (IP or hostname). For SQLite, it should be set to `null`.
+    * **port** : the DBMS server port (number). For SQLite, it should be set to `null`.
     * **database** : the name of the database. For SQLite, you should set it to the SQLite database filepath.
     * **user** : the database suername. For SQLite, it should be set to `null`.
     * **password** : the database user password. For SQLite, it should be set to `null`.

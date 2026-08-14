@@ -17,7 +17,7 @@ class RoviManager
     /**
      * @var array
      */
-    private const CONN_PARAMETERS = ['name','type','server','database','user','password'];
+    private const CONN_PARAMETERS = ['name','type','server','database','user','password','port'];
 
     /**
      * @var object

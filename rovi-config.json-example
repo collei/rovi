@@ -14,6 +14,7 @@
                 "name": "useiro",
                 "type": "sqlite",
                 "server": null,
+                "port": null,
                 "database": "sqlite-example.db",
                 "user": null,
                 "password": null

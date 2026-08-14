@@ -77,20 +77,23 @@ final class Connector
 	/**
 	 * Initializes a new instance
 	 *
+	 * @param string|null &$name
 	 * @param string $type
-	 * @param mixed $dsn
-	 * @param string $database
-	 * @param string $username
-	 * @param string $password
+	 * @param string|null $server
+	 * @param string|null $database
+	 * @param string|null $username
+	 * @param string|null $password
+	 * @param int|null $port
      * @return Rovi\Connections\Connection 
 	 */
 	public function build(
+        ?string &$name = null,
         string $type,
         ?string $server = null,
         ?string $database = null,
         ?string $username = null,
         ?string $password = null,
-        ?string &$name = null
+        ?int $port = null
     ) {
 		$vendor = self::getSupportedType($type);
 
@@ -98,7 +101,7 @@ final class Connector
             throw new InvalidArgumentException(sprintf('Unsupported vendor: \'%s\'', $type));
         }
 
-        $dsn = $this->buildDsn($vendor, $server, $database, $username, $password);
+        $dsn = $this->buildDsn($vendor, $server, $database, $username, $password, $port);
 
         $class = self::DB_VENDORS[$vendor];
 
