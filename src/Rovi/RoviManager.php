@@ -293,6 +293,18 @@ class RoviManager
     }
 
     /**
+     * Retrieves data from Rovi config. Accepts '.' notation.
+     * 
+     * @param string $name
+     * @param mixed $default = null
+     * @return mixed
+     */
+    public function getConfig(string $name, $default = null)
+    {
+        return \get_nested_data_from($this->config, $name, $default);
+    }
+
+    /**
      * Catter a Logger as configured if logging is enabled.
      * 
      * @return Psr\Log\LoggerInterface|null
