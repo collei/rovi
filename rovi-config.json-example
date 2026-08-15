@@ -9,6 +9,7 @@
     },
     "db": {
         "default": "useiro",
+        "connectionAutoImport": true,
         "connections": [
             {
                 "name": "useiro",
