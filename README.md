@@ -6,7 +6,7 @@ Independent query builder for PHP.
 
 * A simple ORM
 * A simple query builder
-* A simple, built-in, logging system  
+* A simple, built-in, logging system
 
 ## Requirements
 
@@ -29,6 +29,7 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
     },
     "db": {
         "default": "useiro",
+        "autoImport": true,
         "connections": [
             {
                 "name": "useiro",
@@ -53,12 +54,13 @@ Rename the `rovi-config.json-example` file to `rovi-config.json` and adjust sett
   * **level** : the minimal level to be logged. E.g., if you set it to "ERROR", no log of level below ERROR (i.e., DEBUG, INFO, WARNING) will be registered.
 * **db** : the database configuration.
   * **default** : the default connection name to be used when none is specified.
+  * **connectionAutoImport** : `true` enables connection autoimport from framework (at moment, availabe for PSharp only), `false` disables it.
   * **connections** : one or more connections to be configured.
     * **name** : name of the connection.
     * **type** : it refers to the DBMS vendor (e.g., "sqlite", "mssql", "mysql" etc).
-    * **server** : the DBMS server address (IP or hostname). For SQLite, it should be set to `null`.
-    * **port** : the DBMS server port (number). For SQLite, it should be set to `null`.
+    * **server** : the DBMS server address (IP or hostname). For SQLite, you should set it to `null`.
+    * **port** : the DBMS server port (number). For SQLite, you should set it to `null`.
     * **database** : the name of the database. For SQLite, you should set it to the SQLite database filepath.
-    * **user** : the database suername. For SQLite, it should be set to `null`.
-    * **password** : the database user password. For SQLite, it should be set to `null`.
+    * **user** : the database username. For SQLite, you should set it to `null`.
+    * **password** : the database user password. For SQLite, you should set it to `null`.
  
