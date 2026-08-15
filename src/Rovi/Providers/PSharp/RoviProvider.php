@@ -26,6 +26,10 @@ class RoviProvider extends ServiceProvider
         $this->container->configureBuilder(RoviManager::class, function(Application $app, Config $config){
             $manager = new RoviManager($config->get('rovi'));
 
+            if ($manager->getConfig('db.connectionAutoImport', false) === false) {
+                return $manager;
+            }
+
             $connections = $config->get('db.connections');
 
             foreach ($connections as $name => $data) {
