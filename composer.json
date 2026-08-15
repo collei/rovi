@@ -25,6 +25,9 @@
         "psr-4": {
             "Rovi\\": "src/Rovi/",
             "Models\\": "Models/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     }
 }
