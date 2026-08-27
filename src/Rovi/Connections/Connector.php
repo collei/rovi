@@ -19,11 +19,11 @@ final class Connector
      * @var array
      */
     protected const DB_VENDORS = [
-        'mssql' => \Rovi\Connections\SqlServerConnection::class,
-        'pgsql' => \Rovi\Connections\PostgresConnection::class,
         'mysql' => \Rovi\Connections\MySqlConnection::class,
-        'sqlite' => \Rovi\Connections\SqliteConnection::class,
+        'pgsql' => \Rovi\Connections\PostgresConnection::class,
         'oci' => \Rovi\Connections\OracleConnection::class,
+        'sqlsrv' => \Rovi\Connections\SqlServerConnection::class,
+        'sqlite' => \Rovi\Connections\SqliteConnection::class,
     ];
 
     /**

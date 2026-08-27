@@ -2,6 +2,7 @@
 namespace Rovi\Connections;
 
 use Rovi\Query\Grammars\PostgresGrammar;
+use PDO;
 
 /**
  * SqlServer connection.
