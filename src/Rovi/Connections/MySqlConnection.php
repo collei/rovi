@@ -61,7 +61,7 @@ class MySqlConnection extends Connection
         // default version number if no version could be captured
         $version = '0.0.0.0';
 
-        $stmt = $this->getHandle()->query('SELECT VERSION()');
+        $stmt = $this->open()->getHandle()->query('SELECT VERSION()');
 
         $this->dbVersionString = $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
 

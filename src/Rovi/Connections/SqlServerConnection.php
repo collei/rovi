@@ -50,7 +50,7 @@ class SqlServerConnection extends Connection
         // source: https://sqlserverbuilds.blogspot.com/ viewed 2026-07-11 10:54 GMT-3
         $version = '11.0.2100.60';
 
-        $stmt = $this->getHandle()->query('SELECT @@version');
+        $stmt = $this->open()->getHandle()->query('SELECT @@version');
 
         $this->dbVersionString = $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
 

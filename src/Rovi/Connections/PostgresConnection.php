@@ -48,7 +48,7 @@ class PostgresConnection extends Connection
         // default version 
         $version = '0.0.0.0';
 
-        $stmt = $this->getHandle()->query('SELECT version() ');
+        $stmt = $this->open()->getHandle()->query('SELECT version() ');
 
         $this->dbVersionString = $info = $stmt->fetch(PDO::FETCH_COLUMN) ?? '';
 
