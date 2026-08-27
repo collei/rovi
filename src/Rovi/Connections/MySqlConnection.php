@@ -3,6 +3,7 @@ namespace Rovi\Connections;
 
 use Rovi\Query\Grammars\MySqlGrammar;
 use Rovi\Query\Grammars\MariaDbGrammar;
+use PDO;
 
 /**
  * SqlServer connection.
@@ -19,7 +20,7 @@ class MySqlConnection extends Connection
 	 */
 	public function __construct($dsn = '', string $database = '', ?string $username = null, ?string $password = null)
     {
-        parent::__construct('sqlite', $dsn, $database, $username, $password);
+        parent::__construct('mysql', $dsn, $database, $username, $password);
     }
 
     /**
