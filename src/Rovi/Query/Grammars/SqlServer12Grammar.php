@@ -86,6 +86,38 @@ class SqlServer12Grammar extends Grammar
     }
 
     /**
+     * Compiles auto increment.
+     * 
+     * @param int $seed = 1
+     * @param int $increment = 1
+     * @return string
+     */
+    protected function compileAutoIncrement(int $seed = 1, int $increment = 1)
+    {
+        return sprintf('IDENTITY(%s,%s)', $seed, $increment);
+    }
+
+    /**
+     * Compiles table primary key column.
+     * 
+     * @return string
+     */
+    protected function compilePrimaryKey()
+    {
+        return 'PRIMARY KEY';
+    }
+
+    /**
+     * Compiles table primary key column constraint.
+     * 
+     * @return string
+     */
+    protected function compileConstraintPrimaryKey()
+    {
+        return 'CONSTRAINT PRIMARY KEY (%s)';
+    }
+
+    /**
      * Compiles select statement.
      * 
      * @param string $select
