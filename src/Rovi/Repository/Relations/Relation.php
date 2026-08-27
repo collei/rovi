@@ -3,6 +3,7 @@ namespace Rovi\Repository\Relations;
 
 use InvalidArgumentException;
 use LogicException;
+use Rovi\DatabaseException;
 use Rovi\Repository\Model;
 use Rovi\Repository\Traits\BuilderTrait;
 use Rovi\Query\Builder;
@@ -198,7 +199,13 @@ abstract class Relation
         
         $mapper = $model::getInstanceMapper();
 
-        $result = $this->query()->getBuilder()->get();
+        $query = $this->query()->getBuilder();
+
+        $result = $query->get();
+
+        if (false === $result && $query->hasError()) {
+            throw new DatabaseException(json_encode($query->lastError()));
+        }
 
         return ($this instanceof BelongsTo)
             ? $mapper($result->first()) 
