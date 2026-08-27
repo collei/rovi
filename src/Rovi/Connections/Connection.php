@@ -755,7 +755,6 @@ abstract class Connection
             'name' => $this->name,
             'database' => $this->database,
             'username' => $this->username,
-            'grammar' => $this->grammar ? (get_class($this->grammar) . '@' . spl_object_id($this->grammar)) : 'NULL',
             'handle' => $this->handle ? (get_class($this->handle) . '@' . spl_object_id($this->handle)) : 'NULL',
             'logger' => $this->logger ? (get_class($this->logger) . '@' . spl_object_id($this->logger)) : 'NULL',
             'options' => $this->options,
