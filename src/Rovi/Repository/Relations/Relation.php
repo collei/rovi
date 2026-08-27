@@ -103,7 +103,7 @@ abstract class Relation
         if ($shortName) {
             $class = get_class($this->left);
 
-            $shortClass = substr($class, strrpos($class, '\\'));
+            $shortClass = substr($class, strrpos($class, '\\') + 1);
 
             return $lowercased ? strtolower($shortClass) : $shortClass;
         }
@@ -131,7 +131,7 @@ abstract class Relation
     protected final function rightClass(bool $shortName = false, bool $lowercased = false)
     {
         if ($shortName) {
-            $shortClass = substr($this->rightClass, strrpos($this->rightClass, '\\'));
+            $shortClass = substr($this->rightClass, strrpos($this->rightClass, '\\') + 1);
 
             return $lowercased ? strtolower($shortClass) : $shortClass;
         }
