@@ -18,7 +18,7 @@ class PostgresConnection extends Connection
 	 */
 	public function __construct($dsn = '', string $database = '', ?string $username = null, ?string $password = null)
     {
-        parent::__construct('sqlite', $dsn, $database, $username, $password);
+        parent::__construct('pgsql', $dsn, $database, $username, $password);
     }
 
 	/**
