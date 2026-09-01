@@ -9,6 +9,7 @@ use Rovi\Query\Keepers\BindingKeeper;
 use Rovi\Query\Expressions\Expression;
 use Rovi\Query\Expressions\Joiner;
 use Collei\Collections\Collection;
+use Collei\Collections\LazyCollection;
 
 /**
  * Query builder.
@@ -1090,7 +1091,7 @@ class Builder
      * Performs the query and retrieve results.
      * 
      * @param string ...$fields
-     * @return Collei\Collections\Collection|array|false
+     * @return Collei\Collections\LazyCollection|array|false
      */
     public function get(string ...$fields)
     {
@@ -1102,11 +1103,11 @@ class Builder
 
         if ($this->makeSelectSql($sql, $bindings)) {
             if (false !== ($result = $this->connection->select($sql, $bindings, $errors))) {
-                if (class_exists(Collection::class, true)) {
-                    return new Collection(json_decode(json_encode($result)));
+                if (class_exists(LazyCollection::class, true)) {
+                    return new LazyCollection($result);
                 }
 
-                return json_decode(json_encode($result));
+                return $result;
             }
 
             return $this->setLastCustomError($errors);
