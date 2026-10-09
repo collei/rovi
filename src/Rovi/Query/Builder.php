@@ -833,6 +833,40 @@ class Builder
     }
 
     /**
+     * Add an where null clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @param string $and
+     * @return $this
+     */
+    public function whereNull($field, string $and = 'and')
+    {
+        return $this->where($field, 'is', Expression::from('NULL'), $and);
+    }
+
+    /**
+     * Add an and-where null clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @return $this
+     */
+    public function andWhereNull($field)
+    {
+        return $this->whereNull($field, 'and');
+    }
+
+    /**
+     * Add an or-where null clause.
+     * 
+     * @param string|Closure|Expression $field
+     * @return $this
+     */
+    public function orWhereNull($field)
+    {
+        return $this->whereNull($field, 'or');
+    }
+
+    /**
      * Helper to flexibilize operator omission.
      * 
      * @param mixed $operator = null
