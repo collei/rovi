@@ -58,6 +58,17 @@ class Expression
     }
 
     /**
+     * Crafts a new Expression.
+     * 
+     * @param string $expression
+     * @return static
+     */
+    public static function from(string $expression)
+    {
+        return new self($expression);
+    }
+
+    /**
      * Returns the expression.
      * 
      * @return string
