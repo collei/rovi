@@ -555,6 +555,40 @@ class Builder
     }
 
     /**
+     * Add a raw where clause.
+     * 
+     * @param string $sql
+     * @param string $and = 'and'
+     * @return $this
+     */
+    public function whereRaw(string $sql, string $and = 'and')
+    {
+        return $this->addRawCondition('where', $sql, $and);
+    }
+
+    /**
+     * Add a and-raw where clause.
+     * 
+     * @param string $sql
+     * @return $this
+     */
+    public function andWhereRaw(string $sql)
+    {
+        return $this->addRawCondition('where', $sql, 'and');
+    }
+
+    /**
+     * Add a or-raw where clause.
+     * 
+     * @param string $sql
+     * @return $this
+     */
+    public function orWhereRaw(string $sql)
+    {
+        return $this->addRawCondition('where', $sql, 'or');
+    }
+
+    /**
      * Add a and-where clause.
      * 
      * @param string|Closure|Expression $field
@@ -835,13 +869,13 @@ class Builder
     /**
      * Add an where null clause.
      * 
-     * @param string|Closure|Expression $field
+     * @param string $field
      * @param string $and
      * @return $this
      */
-    public function whereNull($field, string $and = 'and')
+    public function whereNull(string $field, string $and = 'and')
     {
-        return $this->where($field, 'is', Expression::from('NULL'), $and);
+        return $this->whereRaw(sprintf('%s IS NULL', $field), $and);
     }
 
     /**
@@ -915,6 +949,25 @@ class Builder
         }
 
         $this->{$clause}[] = compact('field','operator','value');
+
+        return $this;
+    }
+
+    /**
+     * Add a raw condition into a given clause.
+     * 
+     * @param string $clause
+     * @param string $rawSql
+     * @param string $and
+     * @return $this
+     */
+    protected function addRawCondition(string $clause, string $rawSql, string $and)
+    {
+        if (! empty($this->{$clause})) {
+            $this->{$clause}[] = $and;
+        }
+
+        $this->{$clause}[] = $rawSql;
 
         return $this;
     }
