@@ -64,6 +64,7 @@ trait BuilderTrait
             'where', 'andWhere', 'orWhere',
             'whereBetween', 'andWhereBetween', 'orWhereBetween',
             'whereNotBetween', 'andWhereNotBetween', 'orWhereNotBetween',
+            'whereNull', 'andWhereNull', 'orWhereNull',
             'whereIn', 'andWhereIn', 'orWhereIn',
             'whereNotIn', 'andWhereNotIn', 'orWhereNotIn',
             'whereExists', 'andWhereExists', 'orWhereExists',
