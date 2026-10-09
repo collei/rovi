@@ -574,7 +574,7 @@ abstract class Model
             return $this->relationships[$relation];
         }
 
-        return $this->relationships[$relation] = new BelongsTo($this, $other, $foreignKey, $localKey);
+        return $this->relationships[$relation] = new BelongsTo($this, $other, $localKey, $foreignKey);
     }
 
     /**
