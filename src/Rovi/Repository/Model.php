@@ -627,4 +627,17 @@ abstract class Model
 
         return $caller['function'];
     }
+
+    /**
+     * Flushes the relation cache.
+     * 
+     * @param string $relation
+     * @return $this
+     */
+    protected function unsetRelation(string $relation)
+    {
+        unset($this->relationships[$relation]);
+
+        return $this;
+    }
 }
