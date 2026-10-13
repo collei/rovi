@@ -293,6 +293,40 @@ class RoviManager
     }
 
     /**
+     * Retrieves the query builder instance.
+     * 
+     * @param ?string $name = null
+     * @return \Collei\Rovi\Query\Builder|null
+     */
+    public function getBuilder(?string $name = null)
+    {
+        if ($conn = $this->getConnection($name)) {
+            return $conn->getBuilder();
+        }
+
+        if ($conn = $this->getAnyConnection($name)) {
+            return $conn->getBuilder();
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves the query builder instance.
+     * 
+     * @param ?string $name = null
+     * @return \Collei\Rovi\Query\Builder|null
+     */
+    public static function queryBuilder(?string $name = null)
+    {
+        if ($instance = self::instance()) {
+            return $instance->getBuilder($name);
+        }
+
+        return null;
+    }
+
+    /**
      * Retrieves data from Rovi config. Accepts '.' notation.
      * 
      * @param string $name
