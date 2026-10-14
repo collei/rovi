@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "collei/collection",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/collei/collection.git",
-                "reference": "bf5844cd9a9c3b997883fe060542a4083a7fcadf"
+                "reference": "cd66258d608abbbb6da8b420746f66e02e73e95b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/collei/collection/zipball/bf5844cd9a9c3b997883fe060542a4083a7fcadf",
-                "reference": "bf5844cd9a9c3b997883fe060542a4083a7fcadf",
+                "url": "https://api.github.com/repos/collei/collection/zipball/cd66258d608abbbb6da8b420746f66e02e73e95b",
+                "reference": "cd66258d608abbbb6da8b420746f66e02e73e95b",
                 "shasum": ""
             },
             "require": {
@@ -48,10 +48,10 @@
                 "collection"
             ],
             "support": {
-                "source": "https://github.com/collei/collection/tree/v1.0.0",
+                "source": "https://github.com/collei/collection/tree/v1.0.2",
                 "issues": "https://github.com/collei/collection/issues"
             },
-            "time": "2026-05-30T18:07:41+00:00"
+            "time": "2026-09-02T18:17:35+00:00"
         },
         {
             "name": "psr/log",

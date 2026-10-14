@@ -22,13 +22,13 @@
         "psr/log": "^3.0"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php",
+            "src/rovi-facade.php"
+        ],
         "psr-4": {
             "Rovi\\": "src/Rovi/",
             "Models\\": "Models/"
-        },
-        "files": [
-            "src/helpers.php",
-            "src/Rovi.php"
-        ]
+        }
     }
 }
