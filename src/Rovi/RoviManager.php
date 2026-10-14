@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Rovi\Connections\Connector;
 use Rovi\Connections\ConnectionBuilder;
 use Rovi\Logging\RoviLogger;
+use Rovi\Query\Expressions\Expression;
 use Psr\Log\NullLogger;
 
 /**
@@ -296,7 +297,7 @@ class RoviManager
      * Retrieves the query builder instance.
      * 
      * @param ?string $name = null
-     * @return \Collei\Rovi\Query\Builder|null
+     * @return \Rovi\Query\Builder|null
      */
     public function getBuilder(?string $name = null)
     {
@@ -315,7 +316,7 @@ class RoviManager
      * Retrieves the query builder instance.
      * 
      * @param ?string $name = null
-     * @return \Collei\Rovi\Query\Builder|null
+     * @return \Rovi\Query\Builder|null
      */
     public static function queryBuilder(?string $name = null)
     {
@@ -324,6 +325,17 @@ class RoviManager
         }
 
         return null;
+    }
+
+    /**
+     * Retrieves the string as a raw Expression.
+     * 
+     * @param string $string
+     * @return \Rovi\Query\Expressions\Expression|null
+     */
+    public function raw(string $string)
+    {
+        return Expression::from($string);
     }
 
     /**

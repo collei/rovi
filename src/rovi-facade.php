@@ -13,6 +13,8 @@ class Rovi extends PSharp\Support\Facade
     protected static $AVAILABLE = [
         'builder' => 'getBuilder',
         'query' => 'getBuilder',
+        'raw' => 'raw',
+        'rawSql' => 'raw',
     ];
 
     /**
