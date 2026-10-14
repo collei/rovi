@@ -27,7 +27,8 @@
             "Models\\": "Models/"
         },
         "files": [
-            "src/helpers.php"
+            "src/helpers.php",
+            "src/Rovi.php"
         ]
     }
 }
